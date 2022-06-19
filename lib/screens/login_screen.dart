@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:calculator/includes_file.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +11,31 @@ class LoginScreenReal extends State<LoginScreen> {
   final txtEditContr1 = TextEditingController();
   final txtEditContr2 = TextEditingController();
   final loginResultxt = TextEditingController();
+  var loadData = 0;
+
+  @override
+  void setValue(var i) {
+    setState((){
+      loadData = i;
+    });
+
+  }
+
+  Future<String> getData(var id, var passwd) {
+    return Future.delayed(Duration(seconds: 2), () {
+      var db = new dbCOn();
+      String sql = "select * from community where USER_NAME = '" + id + "' AND CREDENTIAL = '" + passwd + "'";
+
+      var loginOK = db.runSQL(sql);
+      if(loginOK == 1)
+      {
+
+      }
+      return "I am data";
+      // throw Exception("Custom Error");
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,28 +65,125 @@ class LoginScreenReal extends State<LoginScreen> {
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(txtEditContr2, "Password"),
               SizedBox(height: 10),
+loadData == 1 ?
+          FutureBuilder(
+            builder: (ctx, snapshot) {
+              // Checking if future is resolved or not
+              if (snapshot.connectionState == ConnectionState.done) {
+                // If we got an error
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error} occurred',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+
+                  // if we got our data
+                } else if (snapshot.hasData) {
+                  // Extracting data from snapshot object
+                  final data = snapshot.data as String;
+                  return Center(
+                    child: Text(
+                      '$data',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  );
+                }
+              }
+
+              // Displaying LoadingSpinner to indicate waiting state
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+
+            // Future that needs to be resolved
+            // inorder to display something on the Canvas
+            future: getData(txtEditContr1.text, txtEditContr2.text),
+          ) : Text("Nothing..."),
+
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (ctx) => LoginCheckPage(),
-            ),
-          ),
+        onPressed: () {setValue(1);},
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
         tooltip: 'Login',
         child: Text("Login"),
         // const Icon(Icons.ten_k_outlined),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: LoginCheckfn(),
+// //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
+//         tooltip: 'Login',
+//         child: Text("Login"),
+//         // const Icon(Icons.ten_k_outlined),
+//       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+
+  LoginCheckfn()
+  {
+    FutureBuilder(
+      builder: (ctx, snapshot) {
+        // Checking if future is resolved or not
+        if (snapshot.connectionState == ConnectionState.done) {
+          // If we got an error
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '${snapshot.error} occurred',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+
+            // if we got our data
+          } else if (snapshot.hasData) {
+            // Extracting data from snapshot object
+            final data = snapshot.data as String;
+            return Center(
+              child: Text(
+                '$data',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+          }
+        }
+
+        // Displaying LoadingSpinner to indicate waiting state
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+
+      // Future that needs to be resolved
+      // inorder to display something on the Canvas
+      future: getData(txtEditContr1.text, txtEditContr2.text),
+    );
+  }
+
 }
 
 
+
+
+
+
+
+
 class LoginCheckPage extends StatelessWidget {
+
+  var id, passwd;
+
+
+  LoginCheckPage(var t1, var t2) {
+    id = t1;
+    passwd = t2;
+  }
   /// Function that will return a
   /// "string" after some time
   /// To demonstrate network call
@@ -70,11 +194,8 @@ class LoginCheckPage extends StatelessWidget {
   Future<String> getData() {
     return Future.delayed(Duration(seconds: 2), () {
       var db = new dbCOn();
-      var loginCrd = new LoginScreenReal();
-      var userID = loginCrd.txtEditContr1.text;
-      var passwd = loginCrd.txtEditContr2.text;
-      // String sql = "select * from community where USER_NAME = '" + userID + "' AND CREDENTIAL = '" + passwd + "'";
-      String sql = "select * from community where USER_NAME = 'm' AND CREDENTIAL = '1'";
+      String sql = "select * from community where USER_NAME = '" + id + "' AND CREDENTIAL = '" + passwd + "'";
+
       var loginOK = db.runSQL(sql);
       if(loginOK == 1)
         {
