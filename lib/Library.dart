@@ -1,33 +1,41 @@
 import 'dart:developer';
 import 'package:mysql1/mysql1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'includes_file.dart';
 
 class dbCOn {
   // Open a connection (testdb should already exist)
-  Future<MySqlConnection> getConnection() async {
+  Future<MySqlConnection> getConnection() {
     var settings = ConnectionSettings(
         host: '103.219.147.25',
         port: 3306,
         user: 'mazharul',
         db: 'flutter_test',
         password: 'Mz#20BF!t22');
-    return await MySqlConnection.connect(settings);
+    return MySqlConnection.connect(settings);
   }
 
-  runSQL(var sql) {
-    var res = 0;
+  Future<int> runSQL(var sql) async {
+    SharedPreferences prefs;
+    prefs = await SharedPreferences.getInstance();
+    prefs.clear();
     getConnection().then((conn) {
       log("conn...=="+sql);
       conn.query(sql).then((result) {
         for(var r in result)
         {
+
+          prefs.setString("UserName", r["NAME"]);
+
           log(r["NAME"].toString());
         }
-        res = 1;
-        // return result;
+        // res = 1;
+        return 1;
       });
     });
-    return res;
+
+    return 1;
   }
 
 
@@ -40,6 +48,8 @@ class Library {
   var db = new dbCOn();
   var res = 0;
   var result;
+
+
 
   int loginCheck(var userID, var passwd) {
     var userInfo = List.filled(3, null, growable: false);

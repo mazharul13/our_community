@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui_elements/customTextBox.dart';
+import '../ui_elements/customUI.dart';
 
 class CalculatorScreen extends StatefulWidget {
 
@@ -33,7 +33,7 @@ class CalculatorScreenReal extends State<CalculatorScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    var customTxtB = new customTextBox();
+    var customTxtB = new customUI();
 
     return Scaffold(
       appBar: AppBar(
