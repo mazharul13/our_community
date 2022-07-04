@@ -14,7 +14,7 @@ class customUI
 
         label: Text(txtLabel.toString()),
         border: OutlineInputBorder(),
-        hintText: 'Enter a search term',
+        hintText: 'Enter '+txtLabel.toString(),
       ),
     );
   }
