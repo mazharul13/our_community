@@ -12,6 +12,13 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final txtEditContr1 = TextEditingController();
   final txtEditContr2 = TextEditingController();
   final loginResultxt = TextEditingController();
+
+  final tecName = TextEditingController();
+  final tecFName = TextEditingController();
+  final tecPhone = TextEditingController();
+  final tecVillage = TextEditingController();
+
+
   var loadData = 0;
   late SharedPreferences prefs;
 
@@ -32,11 +39,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
 
     return Scaffold(
       // resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text("Add New People"),
-      ),
+      appBar: appBar.crtAppBar("Add New People", context),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(

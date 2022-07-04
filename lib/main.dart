@@ -12,11 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Splash Screen',
+      title: 'Community Splash Screen',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.deepOrange,
       ),
-      home: const MyHomePage(title: 'Calculator...Demo'),
+      home: const MyHomePage(title: 'Our Community'),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -59,11 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.white,
-        child:Image.asset('assets/images/flag.png')
+        child:Image.asset('assets/images/community_logo.jpg')
         // child:FlutterLogo(size:MediaQuery.of(context).size.height)
     );
   }
 }
+
 
 
 

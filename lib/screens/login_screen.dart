@@ -107,11 +107,7 @@ class LoginScreenReal extends State<LoginScreen> {
 
     return Scaffold(
       // resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text("Login please"),
-      ),
+      appBar: appBar.crtAppBar("Login Please", context),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
