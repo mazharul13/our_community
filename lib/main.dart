@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'screens/calc_screen.dart';
-import 'screens/login_screen.dart';
+import 'screens/community_people_entry.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(Duration(seconds: 2),
             ()=>Navigator.pushReplacement(context,
             MaterialPageRoute(builder:
-                (context) => LoginScreen()
+                (context) => CommunityEntryScreen()
             )
         )
     );

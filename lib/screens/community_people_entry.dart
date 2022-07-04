@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
 
-class CommunityEntry extends StatefulWidget {
+class CommunityEntryScreen extends StatefulWidget {
   @override
-  State<CommunityEntry> createState() => CommunityEntryScreen();
+  State<CommunityEntryScreen> createState() => CommunityEntry();
 }
 
-class CommunityEntryScreen extends State<CommunityEntry> {
+class CommunityEntry extends State<CommunityEntryScreen> {
   final txtEditContr1 = TextEditingController();
   final txtEditContr2 = TextEditingController();
   final loginResultxt = TextEditingController();
@@ -45,80 +45,15 @@ class CommunityEntryScreen extends State<CommunityEntry> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'Please enter your credentials...',
-              ),
+              customTxtB.customTextBoxCrt(txtEditContr1, "Name"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(txtEditContr1, "User ID"),
+              customTxtB.customTextBoxCrt(txtEditContr1, "Father's Name"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(txtEditContr2, "Password"),
+              customTxtB.customTextBoxCrt(txtEditContr2, "Cell Phone"),
               SizedBox(height: 10),
-              dropBtn2(),
+              customTxtB.customTextBoxCrt(txtEditContr2, "Village"),
               SizedBox(height: 10),
-              Expanded(
-                child: loadData == 1
-                    ? FutureBuilder(
-                  builder:
-                      (BuildContext context, AsyncSnapshot snapshot) {
-                    // Checking if future is resolved or not
-                    if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      // If we got an error
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        );
 
-                        // if we got our data
-                      } else if (snapshot.hasData) {
-                        // log(snapshot.data[0]);
-                        // Extracting data from snapshot object
-                        // final data = snapshot.data as String;
-                        return ListView.builder(
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (context, int index) {
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    "https://media-exp2.licdn.com/dms/image/C5603AQF4L_AaIPrOZA/profile-displayphoto-shrink_100_100/0/1615744394235?e=1661385600&v=beta&t=DNCZkN8em8xKyx1m1q5P-6lnpxpcXc3ITBsvK6ZJE0k"),
-                              ),
-                              title: Text(snapshot.data[index]),
-                              subtitle: Text(snapshot.data[index]),
-                              onTap: () {
-                                prefs.setString("NAME", snapshot.data[index].toString());
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => DetailPage(
-                                            snapshot.data[index])));
-                              },
-                            );
-                          },
-                        );
-                        // return Center(
-                        //   child: Text(
-                        //     '$data',
-                        //     style: TextStyle(fontSize: 18),
-                        //   ),
-                        // );
-                      }
-                    }
-
-                    // Displaying LoadingSpinner to indicate waiting state
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-
-                  // Future that needs to be resolved
-                  // inorder to display something on the Canvas
-                  future: getData(txtEditContr1.text, txtEditContr2.text),
-                )
-                    : Text("Waiting for login..."),
-              ),
             ],
           ),
         ),
@@ -126,24 +61,16 @@ class CommunityEntryScreen extends State<CommunityEntry> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (txtEditContr1.text == '') {
-            Lib.createSnackBar("Please enter credential", context);
+            Lib.createSnackBar("Enter All the values...", context);
           } else {
             setValue(1);
           }
         },
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
-        tooltip: 'Login',
-        child: Text("Login"),
+        tooltip: 'Add New People',
+        child: Text("Add"),
         // const Icon(Icons.ten_k_outlined),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: LoginCheckfn(),
-// //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
-//         tooltip: 'Login',
-//         child: Text("Login"),
-//         // const Icon(Icons.ten_k_outlined),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
