@@ -21,10 +21,81 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final tecName = TextEditingController();
   final tecFName = TextEditingController();
   final tecPhone = TextEditingController();
-  final tecVillage = TextEditingController();
+  final tecAddress = TextEditingController();
 
   var loadData = 0;
   late SharedPreferences prefs;
+  // File imageFile = File('assets/images/dummy.png');
+  late File imageFile;
+  bool _load = false;
+
+  Future<String> saveValues() async {
+    // var db = new dbCOn();
+    // String sql = "select * from community where USER_NAME = '" + userID + "' AND CREDENTIAL = '" + passwd + "'";
+    // String sql1 = "INSERT INTO `community_member` "
+    //     "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `ADDRESS`, `CREATED_AT`)"
+    //     "VALUES('"+tecName.text+"',"
+    //     "'"+tecFName.text+"',"
+    //     "'"+tecPhone.text+"',"
+    //     "'"+tecAddress.text+"',";
+    //     "now())";
+
+    // log(sql1);
+    // var res = await db.runSQL(sql1);
+    // log(res.toString());
+    // return 0;
+
+    return await Future.delayed(Duration(seconds: 2), () async {
+      var db = new dbCOn();
+      List<int> imageBytes = imageFile.readAsBytesSync();
+      String base64Image = base64Encode(imageBytes);
+      String sql1 = "INSERT INTO `community_member` "
+          "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, `ADDRESS`, `CREATED_AT`)"
+          "VALUES('"+tecName.text+"',"
+          "'"+tecFName.text+"',"
+          "'"+tecPhone.text+"',"
+          "'"+base64Image+"',"
+          "'"+tecAddress.text+"',"
+          "now())";
+
+      // log(sql1);
+      var res = await db.runSQL(sql1);
+      log(res);
+      // SharedPreferences prefs;
+      // prefs = await SharedPreferences.getInstance();
+      // prefs.clear();
+
+      // var settings = ConnectionSettings(
+      //     host: '103.219.147.25',
+      //     port: 3306,
+      //     user: 'mazharul',
+      //     db: 'flutter_test',
+      //     password: 'Mz#20BF!t22');
+      //
+      // var db = MySqlConnection.connect(settings);
+      //
+      // var userName = "";
+      // userName = await db.then((conn) async {
+      //   log("conn...==" + sql1);
+      //   await conn.query(sql1).then((result) {
+      //     for (var r in result) {
+      //       // prefs.setString("UserName", r["NAME"]);
+      //       // userName = r["NAME"];
+      //       // data.add(userName);
+      //       // log(r["NAME"].toString());
+      //     }
+      //     // res = 1;
+      //     // return 1;
+      //   });
+      //   // prefs.reload();
+      //   return "tttttt";
+      // });
+      // data.add(Text(userName));
+      // return userName;
+      return res;
+    });
+
+  }
 
   @override
   void setValue(var i) {
@@ -32,10 +103,6 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       loadData = i;
     });
   }
-
-  // File imageFile = File('assets/images/dummy.png');
-  late File imageFile;
-  bool _load = false;
 
   /// Get from gallery
   _getFromGallery() async {
@@ -116,24 +183,72 @@ class CommunityEntry extends State<CommunityEntryScreen> {
                           _getFromCamera();
                         }),
                   ]),
-              customTxtB.customTextBoxCrt(txtEditContr1, "Name"),
+              customTxtB.customTextBoxCrt(tecName, "Name"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(txtEditContr1, "Father's Name"),
+              customTxtB.customTextBoxCrt(tecFName, "Father's Name"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(txtEditContr2, "Cell Phone"),
+              customTxtB.customTextBoxCrt(tecPhone, "Cell Phone"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(txtEditContr2, "Village"),
+              customTxtB.customTextBoxCrt(tecAddress, "Village"),
               SizedBox(height: 10),
+              Container(
+                child: loadData == 1
+                    ? FutureBuilder(
+                  builder:
+                      (BuildContext context, AsyncSnapshot snapshot) {
+                    // Checking if future is resolved or not
+                    if (snapshot.connectionState ==
+                        ConnectionState.done) {
+                      // If we got an error
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        );
+
+                        // if we got our data
+                      } else if (snapshot.hasData) {
+                        // log(snapshot.data[0]);
+                        // Extracting data from snapshot object
+                        final data = snapshot.data as String;
+                        return Center(
+                          child: Text(
+                            '$data',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        );
+                      }
+                    }
+
+                    // Displaying LoadingSpinner to indicate waiting state
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+
+                  // Future that needs to be resolved
+                  // inorder to display something on the Canvas
+                  future: saveValues(),
+                )
+                    : Text("Waiting for login..."),
+              ),
             ],
           ),
         ),
       )),
+
+
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (txtEditContr1.text == '') {
+          if (tecName.text == '' || tecFName.text =='' || tecPhone.text == '' || tecAddress.text == '') {
             Lib.createSnackBar("Enter All the values...", context);
           } else {
-            setValue(1);
+            setState(() {
+              loadData = 1;
+            });
           }
         },
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);

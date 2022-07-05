@@ -73,6 +73,7 @@ class LoginScreenReal extends State<LoginScreen> {
           user: 'mazharul',
           db: 'flutter_test',
           password: 'Mz#20BF!t22');
+
       var db = MySqlConnection.connect(settings);
 
       var userName = "";

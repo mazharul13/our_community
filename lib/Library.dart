@@ -16,26 +16,21 @@ class dbCOn {
     return MySqlConnection.connect(settings);
   }
 
-  Future<int> runSQL(var sql) async {
-    SharedPreferences prefs;
-    prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    getConnection().then((conn) {
-      log("conn...=="+sql);
-      conn.query(sql).then((result) {
-        for(var r in result)
-        {
-
-          prefs.setString("UserName", r["NAME"]);
-
-          log(r["NAME"].toString());
-        }
-        // res = 1;
-        return 1;
+  Future runSQL(var sql) async {
+    try{
+      getConnection().then((conn) {
+        // log("conn...=="+sql);
+        conn.query(sql).then((result) {
+          return result;
+        });
       });
-    });
+    }
+    catch(err){
+      print(err.runtimeType);
+    }
 
-    return 1;
+
+    // return 1;
   }
 
 

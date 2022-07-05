@@ -8,3 +8,4 @@ export 'Library.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:hive/hive.dart';
 export 'package:image_picker/image_picker.dart';
+export 'dart:convert';
