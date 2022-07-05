@@ -1,12 +1,17 @@
 import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
+
+import 'dart:io'; // for File
 
 class CommunityEntryScreen extends StatefulWidget {
   @override
   State<CommunityEntryScreen> createState() => CommunityEntry();
 }
+
+enum ImageSourceType { gallery, camera }
 
 class CommunityEntry extends State<CommunityEntryScreen> {
   final txtEditContr1 = TextEditingController();
@@ -18,7 +23,6 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final tecPhone = TextEditingController();
   final tecVillage = TextEditingController();
 
-
   var loadData = 0;
   late SharedPreferences prefs;
 
@@ -29,10 +33,45 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     });
   }
 
+  // File imageFile = File('assets/images/dummy.png');
+  late File imageFile;
+  bool _load = false;
+
+  /// Get from gallery
+  _getFromGallery() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      // File imageFile = File(pickedFile.path);
+      log(pickedFile.path);
+
+      setState(() {
+        imageFile = File(pickedFile.path);
+        _load = true;
+      });
+    }
+  }
+
+  _getFromCamera() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      // File imageFile = File(pickedFile.path);
+      setState(() {
+        imageFile = File(pickedFile.path);
+        _load = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-
     var Lib = new Library();
 
     var customTxtB = new customUI();
@@ -40,14 +79,43 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: appBar.crtAppBar("Add New People", context),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: SingleChildScrollView(
+      child: Container(
+        // padding: const EdgeInsets.all(8.0),
         child: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              _load == false
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset('assets/images/dummy.png'),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.file(imageFile,
+                          width: 200, height: 200, fit: BoxFit.fill),
+                    ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    IconButton(
+                        icon: Image.asset('assets/images/gallery.jfif'),
+                        iconSize: 50,
+                        onPressed: () {
+                          log("sdfsdf");
+                          _getFromGallery();
+                        }),
+                    IconButton(
+                        icon: Image.asset('assets/images/camera.jfif'),
+                        iconSize: 50,
+                        onPressed: () {
+                          log("sdfsdf");
+                          _getFromCamera();
+                        }),
+                  ]),
               customTxtB.customTextBoxCrt(txtEditContr1, "Name"),
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(txtEditContr1, "Father's Name"),
@@ -56,11 +124,10 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(txtEditContr2, "Village"),
               SizedBox(height: 10),
-
             ],
           ),
         ),
-      ),
+      )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (txtEditContr1.text == '') {
@@ -82,7 +149,6 @@ class DetailPage extends StatefulWidget {
   final userInfo;
 
   DetailPage(this.userInfo);
-
 
   @override
   _MyHomePageState createState() {

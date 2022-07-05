@@ -8,10 +8,7 @@ class customUI
   {
     return TextField(
       controller: contr,
-
-
       decoration: InputDecoration(
-
         label: Text(txtLabel.toString()),
         border: OutlineInputBorder(),
         hintText: 'Enter '+txtLabel.toString(),
