@@ -48,6 +48,15 @@ class appBar {
           if (value == 0) {
             log("My account menu is selected.");
           }
+          else if (value == 1) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder:
+                    (context) => CommunityEntryScreen()
+                )
+            );
+            log("Add People menu");
+          }
+
           else if (value == 6) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder:

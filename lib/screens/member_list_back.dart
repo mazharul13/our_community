@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -14,7 +12,7 @@ class MemberList extends State<MemberListScreen> {
 
   Future<List<Map>> MemberListFuture() async {
     var db = new dbCOn();
-    String sql = "select MEMBER_NAME, PHOTO_FILE AS PHOTOS from community_member";
+    String sql = "select MEMBER_NAME, PHOTO_FILE AS PHOTOS from community_member where ID=14";
     var res = await db.getMemberList(sql);
     return res;
   }
@@ -69,13 +67,9 @@ class MemberList extends State<MemberListScreen> {
                               itemCount: snapshot.data.length,
                               itemBuilder: (context, int index) {
 
-                                log(data[index]["PHOTO_FILE"].toString());
-                                log("dddddddddd");
-
                                 return ListTile(
                                   leading: CircleAvatar(
-                                    // backgroundImage: Image.memory(Base64Decoder().convert(data[index]["PHOTOS"])).image),
-                                    backgroundImage: Image.memory(base64.decode(data[index]["PHOTO_FILE"].toString())).image),
+                                    backgroundImage: Image.memory(Base64Decoder().convert(data[index]["PHOTOS"])).image),
                                   title: Text(data[index]["MEMBER_NAME"].toString()),
                                   // subtitle: Text(snapshot.data[index]),
                                 );

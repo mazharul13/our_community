@@ -50,8 +50,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       var db = new dbCOn();
       List<int> imageBytes = await imageFile.readAsBytesSync();
       String base64Image = base64Encode(await imageFile.readAsBytes());
-      log("Insert");
-      log(base64Image);
+      // print(base64Image);
 
       String sql1 = "INSERT INTO `community_member` "
           "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, `ADDRESS`, `CREATED_AT`)"
@@ -65,7 +64,37 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       // log(sql1);
       var res = await db.runSQL(sql1);
       log(res);
+      // SharedPreferences prefs;
+      // prefs = await SharedPreferences.getInstance();
+      // prefs.clear();
 
+      // var settings = ConnectionSettings(
+      //     host: '103.219.147.25',
+      //     port: 3306,
+      //     user: 'mazharul',
+      //     db: 'flutter_test',
+      //     password: 'Mz#20BF!t22');
+      //
+      // var db = MySqlConnection.connect(settings);
+      //
+      // var userName = "";
+      // userName = await db.then((conn) async {
+      //   log("conn...==" + sql1);
+      //   await conn.query(sql1).then((result) {
+      //     for (var r in result) {
+      //       // prefs.setString("UserName", r["NAME"]);
+      //       // userName = r["NAME"];
+      //       // data.add(userName);
+      //       // log(r["NAME"].toString());
+      //     }
+      //     // res = 1;
+      //     // return 1;
+      //   });
+      //   // prefs.reload();
+      //   return "tttttt";
+      // });
+      // data.add(Text(userName));
+      // return userName;
       return res;
     });
 
