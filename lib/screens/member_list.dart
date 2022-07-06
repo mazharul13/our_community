@@ -13,24 +13,27 @@ enum ImageSourceType { gallery, camera }
 
 class MemberList extends State<MemberListScreen> {
 
-  Future<String> saveValues() async {
-    // var db = new dbCOn();
-    // String sql = "select * from community where USER_NAME = '" + userID + "' AND CREDENTIAL = '" + passwd + "'";
+  Future<List<Map>> MemberListFuture() async {
+    var db = new dbCOn();
+    String sql = "select MEMBER_NAME, TO_BASE64(PHOTO_FILE) AS PHOTOS from community_member where ID=18";
+    var res = await db.getMemberList(sql);
+    // log(res.length.toString()+"dddd");
+//    log(sql);
+//     for (var r in res) {
+//             log(r["MEMBER_NAME"].toString());
+//             log(r["PHOTOS"].toString()+"333");
+//           }
 
-    String sql = "33333";
+    // return await Future.delayed(Duration(seconds: 2), () async {
+    //   return "sdsdf";
+    //   var db = new dbCOn();
 
-    // log(sql1);
-    // var res = await db.runSQL(sql1);
-    // log(res.toString());
-    // return 0;
 
-    return await Future.delayed(Duration(seconds: 2), () async {
-      return "sdsdf";
-      var db = new dbCOn();
+
 
       // log(sql1);
-      var res = await db.runSQL(sql);
-      log(res);
+      // var res = await db.runSQL(sql);
+      // log(res);
       // SharedPreferences prefs;
       // prefs = await SharedPreferences.getInstance();
       // prefs.clear();
@@ -62,9 +65,9 @@ class MemberList extends State<MemberListScreen> {
       // });
       // data.add(Text(userName));
       // return userName;
-      return res;
-    });
-    return "sdsdf";
+    //   return res;
+    // });
+    return res;
   }
 
 
@@ -108,12 +111,22 @@ class MemberList extends State<MemberListScreen> {
                           } else if (snapshot.hasData) {
                             // log(snapshot.data[0]);
                             // Extracting data from snapshot object
-                            final data = snapshot.data as String;
-                            return Center(
-                              child: Text(
-                                '$data',
-                                style: TextStyle(fontSize: 18),
-                              ),
+                            final data = snapshot.data;
+                            print(data[0]["MEMBER_NAME"]);
+
+                            return  ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, int index) {
+
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: Image.memory(Base64Decoder().convert(data[index]["PHOTOS"].toString())).image),
+                                  title: Text(data[index]["MEMBER_NAME"].toString()),
+                                  // subtitle: Text(snapshot.data[index]),
+                                );
+                              },
                             );
                           }
                         }
@@ -126,7 +139,7 @@ class MemberList extends State<MemberListScreen> {
 
                       // Future that needs to be resolved
                       // inorder to display something on the Canvas
-                      future: saveValues(),
+                      future: MemberListFuture(),
                     )
                   ),
                 ],

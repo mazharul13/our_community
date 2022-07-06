@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
+import 'dart:convert';
 
 
 
@@ -25,7 +26,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
 
   var loadData = 0;
   late SharedPreferences prefs;
-  // File imageFile = File('assets/images/dummy.png');
+  // File imageFile2 = File(AssetImage('assets/images/dummy.png').toString());
   late File imageFile;
   bool _load = false;
 
@@ -47,8 +48,10 @@ class CommunityEntry extends State<CommunityEntryScreen> {
 
     return await Future.delayed(Duration(seconds: 2), () async {
       var db = new dbCOn();
-      List<int> imageBytes = imageFile.readAsBytesSync();
-      String base64Image = base64Encode(imageBytes);
+      List<int> imageBytes = await imageFile.readAsBytesSync();
+      String base64Image = base64Encode(await imageFile.readAsBytes());
+      // print(base64Image);
+
       String sql1 = "INSERT INTO `community_member` "
           "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, `ADDRESS`, `CREATED_AT`)"
           "VALUES('"+tecName.text+"',"
@@ -114,6 +117,11 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     if (pickedFile != null) {
       // File imageFile = File(pickedFile.path);
       log(pickedFile.path);
+
+      final bytes = await File(pickedFile.path).readAsBytesSync();
+      String img64 = base64Encode(bytes);
+
+      print(img64);
 
       setState(() {
         imageFile = File(pickedFile.path);

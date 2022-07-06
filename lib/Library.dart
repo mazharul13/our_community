@@ -16,11 +16,59 @@ class dbCOn {
     return MySqlConnection.connect(settings);
   }
 
+  Future getMemberList(var sql) async {
+
+    final List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
+
+    // map1.add(m);
+    // m = {'zero': 0, 'one': 1, 'two': 2};
+    // m["i"] = "sdfds";
+    // map1.add(m);
+    // map1.add(m);
+    // map1.add(m);
+    // map1.add(m);
+
+    // for(Map am in map1)
+    //   {
+    //     log(am["i"]);
+    //   }
+
+
+
+
+
+
+    try{
+      await getConnection().then((conn) async {
+        log("conn...=="+sql);
+        await conn.query(sql).then((result) {
+          print({'type':result});
+          // print(result);
+
+
+          for (var r in result) {
+            m = {"MEMBER_NAME": r["MEMBER_NAME"], "PHOTO_FILE": r["PHOTOS"]};
+            map1.add(m);
+            // log(r["PHOTOS"].length.toString());
+          }
+        });
+      });
+    }
+    catch(err){
+      print(err.runtimeType);
+    }
+    log(map1.length.toString()+"3333");
+    return map1;
+  }
+
+
   Future runSQL(var sql) async {
     try{
-      getConnection().then((conn) {
-        // log("conn...=="+sql);
+      await getConnection().then((conn) {
+        log("conn...=="+sql);
         conn.query(sql).then((result) {
+
           return result;
         });
       });
@@ -28,9 +76,7 @@ class dbCOn {
     catch(err){
       print(err.runtimeType);
     }
-
-
-    // return 1;
+    // return res;
   }
 
 

@@ -37,17 +37,18 @@ class appBar {
             itemBuilder: (context) {
               return [
                 _buildPopupMenuItem("My Profile", Icons.search, 0),
+                _buildPopupMenuItem("New Member", Icons.search, 1),
                 _buildPopupMenuItem("List of Member", Icons.search, 2),
-                _buildPopupMenuItem("New Member", Icons.search, 0),
-                _buildPopupMenuItem("Add Payment", Icons.search, 0),
-                _buildPopupMenuItem("New Issue", Icons.search, 0),
-                _buildPopupMenuItem("List of Issue", Icons.search, 0),
+                _buildPopupMenuItem("Add Payment", Icons.search, 3),
+                _buildPopupMenuItem("New Issue", Icons.search, 4),
+                _buildPopupMenuItem("List of Issue", Icons.search, 5),
+                _buildPopupMenuItem("Login", Icons.search, 6),
               ];
             }, onSelected: (value) {
           if (value == 0) {
             log("My account menu is selected.");
           }
-          else if (value == 1) {
+          else if (value == 6) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder:
                     (context) => LoginScreen()
@@ -59,7 +60,7 @@ class appBar {
           else if (value == 2) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder:
-                    (context) => MemberList()
+                    (context) => MemberListScreen()
                 )
             );
             log("Settings menu is selected.");
