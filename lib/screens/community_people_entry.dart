@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
 
-import 'dart:io'; // for File
+
 
 class CommunityEntryScreen extends StatefulWidget {
   @override

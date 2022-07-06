@@ -37,7 +37,7 @@ class appBar {
             itemBuilder: (context) {
               return [
                 _buildPopupMenuItem("My Profile", Icons.search, 0),
-                _buildPopupMenuItem("List of Member", Icons.search, 1),
+                _buildPopupMenuItem("List of Member", Icons.search, 2),
                 _buildPopupMenuItem("New Member", Icons.search, 0),
                 _buildPopupMenuItem("Add Payment", Icons.search, 0),
                 _buildPopupMenuItem("New Issue", Icons.search, 0),
@@ -46,14 +46,25 @@ class appBar {
             }, onSelected: (value) {
           if (value == 0) {
             log("My account menu is selected.");
-          } else if (value == 1) {
+          }
+          else if (value == 1) {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder:
                     (context) => LoginScreen()
                 )
             );
             log("Settings menu is selected.");
-          } else if (value == 2) {
+          }
+
+          else if (value == 2) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder:
+                    (context) => MemberList()
+                )
+            );
+            log("Settings menu is selected.");
+          }
+          else if (value == 2) {
             log("Logout menu is selected.");
           }
         }),
