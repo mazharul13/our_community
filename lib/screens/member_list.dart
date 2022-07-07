@@ -60,15 +60,16 @@ class MemberList extends State<MemberListScreen> {
                 onPressed: () {
                   String text = SearchResultxt.text;
                   if (text.length == 0) {
-                    Lib.createSnackBar(
-                        "Please enter any search value", context);
-                    if(map1.length != map1_backup.length)
-                      {
-                        setState(() {
-                          map1 = map1_backup;
-                        });
-                      }
-
+                    if (isSnackbarActive == false) {
+                      isSnackbarActive = true;
+                      Lib.createSnackBar2(
+                          "Please enter any search value", context);
+                    }
+                    if (map1.length != map1_backup.length) {
+                      setState(() {
+                        map1 = map1_backup;
+                      });
+                    }
                   } else if (text.length >= 1) {
                     // log(text);
                     List<Map> map2 = [];
@@ -78,11 +79,12 @@ class MemberList extends State<MemberListScreen> {
                     });
 
                     if (map2.length == 0) {
-                      if(!isSnackbarActive)
+                      if (isSnackbarActive == false) {
                         isSnackbarActive = true;
-                      Lib.createSnackBar(
-                          "No People found, please try another search",
-                          context);
+                        Lib.createSnackBar2(
+                            "No People found, please try another search",
+                            context);
+                      }
                     } else {
                       setState(() {
                         map1 = map2;
