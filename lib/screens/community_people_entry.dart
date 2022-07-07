@@ -12,7 +12,7 @@ class CommunityEntryScreen extends StatefulWidget {
   State<CommunityEntryScreen> createState() => CommunityEntry();
 }
 
-// enum ImageSourceType { gallery, camera }
+enum ImageSourceType { gallery, camera }
 
 class CommunityEntry extends State<CommunityEntryScreen> {
   final txtEditContr1 = TextEditingController();
@@ -22,7 +22,10 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final tecName = TextEditingController();
   final tecFName = TextEditingController();
   final tecPhone = TextEditingController();
+  final tecEmail = TextEditingController();
+  final tecBloodGroup = TextEditingController();
   final tecAddress = TextEditingController();
+
 
   var loadData = 0;
   late SharedPreferences prefs;
@@ -31,27 +34,12 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   bool _load = false;
 
   Future<String> saveValues() async {
-    // var db = new dbCOn();
-    // String sql = "select * from community where USER_NAME = '" + userID + "' AND CREDENTIAL = '" + passwd + "'";
-    // String sql1 = "INSERT INTO `community_member` "
-    //     "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `ADDRESS`, `CREATED_AT`)"
-    //     "VALUES('"+tecName.text+"',"
-    //     "'"+tecFName.text+"',"
-    //     "'"+tecPhone.text+"',"
-    //     "'"+tecAddress.text+"',";
-    //     "now())";
-
-    // log(sql1);
-    // var res = await db.runSQL(sql1);
-    // log(res.toString());
-    // return 0;
-
     return await Future.delayed(Duration(seconds: 2), () async {
       var db = new dbCOn();
       List<int> imageBytes = await imageFile.readAsBytesSync();
       String base64Image = base64Encode(await imageFile.readAsBytes());
-      log("Insert");
-      log(base64Image);
+      // log("Insert");
+      // log(base64Image);
 
       String sql1 = "INSERT INTO `community_member` "
           "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, `ADDRESS`, `CREATED_AT`)"
@@ -76,6 +64,50 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     setState(() {
       loadData = i;
     });
+  }
+
+  String selectedValue = '';
+  DropdownButton dropBtnKeyVal(var keyValPairs) {
+    // List<Map> keyValues = {"A":1, "B":1 };
+
+    List<Map> keyValues = [
+      {'Text': 'Select Blood Group', 'Value':''},
+      {'Text': 'A', 'Value':'A'},
+      {'Text': 'B+', 'Value':'B+'},
+      {'Text': 'AB+', 'Value':'AB+'},
+      {'Text': 'O+', 'Value':'O+'},
+      {'Text': 'A-', 'Value':'A-'},
+      {'Text': 'B-', 'Value':'B-'},
+      {'Text': 'AB-', 'Value':'AB-'},
+      {'Text': 'O-', 'Value':'O-'}, ];
+    // Map keyValues = {'A': 'A'}, {'B': 'B'};
+    // List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    return DropdownButton(
+
+      borderRadius:BorderRadius.circular(12),
+      underline: Container(), //empty line
+      style: TextStyle(fontSize: 18, color: Colors.black),
+      dropdownColor: Colors.cyan,
+      iconEnabledColor: Colors.red, //Icon color
+
+      isExpanded: true,
+      // isDense: true,
+      value: selectedValue,
+      onChanged: (value) {
+        setState(() {
+          selectedValue = value;
+        });
+        print(value);
+      },
+
+      items: keyValues.map((Map m) {
+        return DropdownMenuItem<String>(
+          value: m['Value'],
+          child: Text(m['Text']),
+        );
+      }).toList(),
+
+    );
   }
 
   /// Get from gallery
@@ -127,7 +159,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       appBar: appBar.crtAppBar("Add New People", context),
       body: SingleChildScrollView(
       child: Container(
-        // padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(10.0),
         child: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
@@ -151,14 +183,14 @@ class CommunityEntry extends State<CommunityEntryScreen> {
                         icon: Image.asset('assets/images/gallery.jfif'),
                         iconSize: 50,
                         onPressed: () {
-                          log("sdfsdf");
+                          // log("sdfsdf");
                           _getFromGallery();
                         }),
                     IconButton(
                         icon: Image.asset('assets/images/camera.jfif'),
                         iconSize: 50,
                         onPressed: () {
-                          log("sdfsdf");
+                          // log("sdfsdf");
                           _getFromCamera();
                         }),
                   ]),
@@ -168,7 +200,11 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(tecPhone, "Cell Phone"),
               SizedBox(height: 10),
-              customTxtB.customTextBoxCrt(tecAddress, "Village"),
+              customTxtB.customTextBoxCrt(tecEmail, "Email"),
+              SizedBox(height: 10),
+              dropBtnKeyVal("BloodGroup"),
+              SizedBox(height: 10),
+              customTxtB.customTextBoxCrt(tecAddress, "Address"),
               SizedBox(height: 10),
               Container(
                 child: loadData == 1

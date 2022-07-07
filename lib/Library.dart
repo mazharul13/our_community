@@ -99,4 +99,14 @@ class Library {
       backgroundColor: Colors.red,
     ));
   }
+  void createSnackBar2(String message, var context) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message.toString()),
+      backgroundColor: Colors.red,
+    )).closed
+        .then((SnackBarClosedReason reason) {
+      // snackbar is now closed.
+      isSnackbarActive = false ;
+    });
+  }
 }
