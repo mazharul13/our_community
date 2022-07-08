@@ -15,7 +15,7 @@ class MemberList extends State<MemberListScreen> {
   Future<List<Map>> MemberListFuture() async {
     var db = new dbCOn();
     String sql =
-        "select MEMBER_NAME, PHOTO_FILE AS PHOTOS from community_member";
+        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP from community_member";
     var res = await db.getMemberList(sql);
     map1_backup = res;
     setState(() {
@@ -41,9 +41,11 @@ class MemberList extends State<MemberListScreen> {
           child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Center(
+
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
           child: Column(
+
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: 10),
@@ -94,7 +96,10 @@ class MemberList extends State<MemberListScreen> {
                 },
               ),
               SizedBox(height: 10),
+
               Container(
+                  // padding: EdgeInsets.all(1), //You can use EdgeInsets like above
+                  // margin: EdgeInsets.all(2),
                   child: map1.length != 0
                       ? ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -104,16 +109,22 @@ class MemberList extends State<MemberListScreen> {
                             // log(data[index]["PHOTO_FILE"].toString());
                             // log("dddddddddd");
 
-                            return ListTile(
-                              leading: CircleAvatar(
-                                  // backgroundImage: Image.memory(Base64Decoder().convert(data[index]["PHOTOS"])).image),
-                                  backgroundImage: Image.memory(base64.decode(
-                                          map1[index]["PHOTO_FILE"].toString()))
-                                      .image),
-                              title:
-                                  Text(map1[index]["MEMBER_NAME"].toString()),
-                              // subtitle: Text(snapshot.data[index]),
-                            );
+                            return Card(
+                                elevation: 8,
+                                color: Colors.lightGreen,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                    Text(map1[index]["MEMBER_NAME"] + "("+map1[index]["CONTACT_NO"]+")",
+                                        textAlign: TextAlign.left
+                                    ),
+                                  Text(map1[index]["ADDRESS"].toString() + "("+map1[index]["BLOOD_GROUP"].toString()+")", textAlign: TextAlign.left
+                                  ),
+
+                                  // subtitle: Text(snapshot.data[index]),
+                                ]));
                           },
                         )
                       : FutureBuilder(
@@ -146,18 +157,15 @@ class MemberList extends State<MemberListScreen> {
                                     // log(data[index]["PHOTO_FILE"].toString());
                                     // log("dddddddddd");
 
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                          // backgroundImage: Image.memory(Base64Decoder().convert(data[index]["PHOTOS"])).image),
-                                          backgroundImage: Image.memory(
-                                                  base64.decode(data[index]
-                                                          ["PHOTO_FILE"]
-                                                      .toString()))
-                                              .image),
-                                      title: Text(data[index]["MEMBER_NAME"]
-                                          .toString()),
+                                    return new Card(
+                                        child: Column(children: <Widget>[
+                                      Text(map1[index]["MEMBER_NAME"] + "("+map1[index]["CONTACT_NO"]+")"
+                                      ),
+                                          Text(map1[index]["MEMBER_FNAME"] + "("+map1[index]["MEMBER_FNAME"]+")"
+                                          ),
+
                                       // subtitle: Text(snapshot.data[index]),
-                                    );
+                                    ]));
                                   },
                                 );
                               }

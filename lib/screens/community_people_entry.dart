@@ -19,6 +19,8 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final txtEditContr2 = TextEditingController();
   final loginResultxt = TextEditingController();
 
+
+
   final tecName = TextEditingController();
   final tecFName = TextEditingController();
   final tecPhone = TextEditingController();
@@ -31,6 +33,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   late SharedPreferences prefs;
   // File imageFile2 = File(AssetImage('assets/images/dummy.png').toString());
   late File imageFile;
+  // int imageFileInitialized = 0;
   bool _load = false;
 
   Future<String> saveValues() async {
@@ -41,12 +44,16 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       // log("Insert");
       // log(base64Image);
 
+      log(tecFName.text);
+
       String sql1 = "INSERT INTO `community_member` "
-          "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, `ADDRESS`, `CREATED_AT`)"
+          "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, "
+          "`BLOOD_GROUP`, `ADDRESS`, `CREATED_AT`)"
           "VALUES('"+tecName.text+"',"
           "'"+tecFName.text+"',"
           "'"+tecPhone.text+"',"
           "'"+base64Image+"',"
+          "'"+selectedValue+"',"
           "'"+tecAddress.text+"',"
           "now())";
 
@@ -121,8 +128,8 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       // File imageFile = File(pickedFile.path);
       log(pickedFile.path);
 
-      final bytes = await File(pickedFile.path).readAsBytesSync();
-      String img64 = base64Encode(bytes);
+      // final bytes = await File(pickedFile.path).readAsBytesSync();
+      // String img64 = base64Encode(bytes);
 
       // log(img64);
 
@@ -258,7 +265,10 @@ class CommunityEntry extends State<CommunityEntryScreen> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if (tecName.text == '' || tecFName.text =='' || tecPhone.text == '' || tecAddress.text == '') {
+          if (tecName.text == '' || tecFName.text =='' || tecPhone.text == '' ||
+              tecAddress.text == '' || _load == false ||
+          selectedValue == ''
+          ) {
             Lib.createSnackBar("Enter All the values...", context);
           } else {
             setState(() {

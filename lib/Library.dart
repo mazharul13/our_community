@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'includes_file.dart';
 
+
 class dbCOn {
   // Open a connection (testdb should already exist)
   Future<MySqlConnection> getConnection() {
@@ -18,22 +19,21 @@ class dbCOn {
 
   Future getMemberList(var sql) async {
 
-    final List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
     Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
     try{
       await getConnection().then((conn) async {
         log("conn...=="+sql);
         await conn.query(sql).then((result) {
           // print({'type':result});
-          // print(result);
-
+          // print(json.decode(result));
 
           for (var r in result) {
-            // m = {"MEMBER_NAME": r["MEMBER_NAME"], "PHOTO_FILE": r["PHOTOS"].toString().replaceAll(RegExp(' {1,}'), '').replaceAll("\n", "")};
-            m = {"MEMBER_NAME": r["MEMBER_NAME"], "PHOTO_FILE": r["PHOTOS"].toString()};
+            m = {"MEMBER_NAME": r["MEMBER_NAME"], "CONTACT_NO": r["CONTACT_NO"],
+              "ADDRESS": r["ADDRESS"], "BLOOD_GROUP": r["BLOOD_GROUP"],
+              "MEMBER_FNAME": r["MEMBER_FNAME"]
+            };
             map1.add(m);
-            // log(r["PHOTOS"].toString().replaceAll(RegExp(' {1,}'), '').replaceAll("\n", ""));
-            // log(r["PHOTOS"].length.toString());
           }
         });
       });
@@ -41,7 +41,7 @@ class dbCOn {
     catch(err){
       print(err.runtimeType);
     }
-    log(map1.length.toString()+"3333");
+    // log(map1.length.toString()+"3333");
     return map1;
   }
 
@@ -52,6 +52,7 @@ class dbCOn {
         log("conn...=="+sql);
         conn.query(sql).then((result) {
 
+          print(result);
           return result;
         });
       });
