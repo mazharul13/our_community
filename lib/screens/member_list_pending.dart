@@ -3,22 +3,65 @@ import 'dart:developer';
 import 'package:calculator/includes_file.dart';
 import 'package:mysql1/mysql1.dart';
 
-class MemberListScreen extends StatefulWidget {
+class MemberListPendingScreen extends StatefulWidget {
   @override
-  State<MemberListScreen> createState() => MemberList();
+  State<MemberListPendingScreen> createState() => MemberListPending();
 }
 
-class MemberList extends State<MemberListScreen> {
+class MemberListPending extends State<MemberListPendingScreen> {
+  bool isLoading = false;
+  bool dataLoaded = false;
   List<Map> map1 = [];
   List<Map> map1_backup = [];
+
+  Future<String> MemberApproveReject(String mobileNumber, int action) async {
+    var Lib = new Library();
+    setState(() {
+      isLoading = true;
+    });
+    var db = new dbCOn();
+    String sql =
+        "UPDATE community_member SET STATUS = "+action.toString()+" WHERE CONTACT_NO = '"+mobileNumber+"'";
+    var res = await db.runInsertUpdateSQL(sql);
+    print(res);
+
+    if(res == 1) {
+      List<Map> map2 = [];
+      map1.forEach((m) {
+        if (!m["CONTACT_NO"].toLowerCase().contains(mobileNumber))
+          map2.add(m);
+      });
+
+      map1_backup = map2;
+      setState(() {
+        map1 = map2;
+        isLoading = false;
+      });
+      Lib.createSnackBar(
+          "Status has been updated for the member...", context);
+    }
+    else
+    {
+      setState(() {
+        // map1 = map2;
+        isLoading = false;
+      });
+      Lib.createSnackBar(
+          "Problem is there while updating status. Please try again later...", context);
+
+    }
+    return "Updated Status";
+
+  }
 
   Future<List<Map>> MemberListFuture() async {
     var db = new dbCOn();
     String sql =
-        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP from community_member WHERE STATUS = 1";
+        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP from community_member WHERE STATUS = 0";
     var res = await db.getMemberList(sql);
     map1_backup = res;
     setState(() {
+      dataLoaded = true;
       map1 = res;
     });
 
@@ -36,7 +79,7 @@ class MemberList extends State<MemberListScreen> {
 
     return Scaffold(
         // resizeToAvoidBottomInset: false,
-        appBar: appBar.crtAppBar("Member List", context),
+        appBar: appBar.crtAppBar("Member List (Pending)", context),
         body: Container(
           padding: const EdgeInsets.all(8.0),
           child: Center(
@@ -108,6 +151,8 @@ class MemberList extends State<MemberListScreen> {
                 // new SingleChildScrollView(
                 //   scrollDirection: Axis.vertical,
                 //   child:
+                dataLoaded == true && map1.length == 0 ?
+                    Text("There is no pending member request...", style: const TextStyle(fontWeight: FontWeight.bold),) :
                 Expanded(
                     // padding: EdgeInsets.all(1), //You can use EdgeInsets like above
                     // margin: EdgeInsets.all(2),
@@ -129,7 +174,7 @@ class MemberList extends State<MemberListScreen> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text("Setting String"),
+                                          title: Text("Show Details"),
                                           content: Text(
                                               "You have choosen to View details of "+
                                                   map1[index]["MEMBER_NAME"].toString() +" ("+
@@ -199,6 +244,74 @@ class MemberList extends State<MemberListScreen> {
                                                         map1[index]["ADDRESS"],
                                                     textAlign: TextAlign.left),
 
+                                                FlatButton(
+                                                  // splashColor: Colors.red,
+                                                  color: Colors.green,
+                                                  // textColor: Colors.white,
+                                                  child:   isLoading
+                                                      ?  CircularProgressIndicator()
+                                                      :
+                                                  Text('Take Action',),
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          title: Text("Approve/Reject Member"),
+                                                          content: Text(
+                                                              "What do you want to do for : "+
+                                                                  map1[index]["MEMBER_NAME"].toString() +" ("+
+                                                                  map1[index]["CONTACT_NO"].toString()+") ???"
+                                                            // controller: _controller,
+                                                          ),
+                                                          actions: <Widget>[
+                                                            Icon(
+                                                              Icons.info_outlined,
+                                                            ),
+
+                                                            FlatButton(
+                                                              child: Text("Not Decided yet"),
+                                                              onPressed: () {
+                                                                Navigator.pop(context, "");
+                                                                // MemberApproveReject(map1[index]["CONTACT_NO"].toString(), 1);
+                                                              },
+                                                              shape: RoundedRectangleBorder(side: BorderSide(
+                                                                  color: Colors.blue,
+                                                                  width: 1,
+                                                                  style: BorderStyle.solid
+                                                              ), borderRadius: BorderRadius.circular(50)),
+                                                            ),
+                                                            FlatButton(
+                                                              child: Text("Approve"),
+                                                              onPressed: () {
+                                                                Navigator.pop(context, "");
+                                                                MemberApproveReject(map1[index]["CONTACT_NO"].toString(), 1);
+                                                              },
+                                                              shape: RoundedRectangleBorder(side: BorderSide(
+                                                                  color: Colors.blue,
+                                                                  width: 1,
+                                                                  style: BorderStyle.solid
+                                                              ), borderRadius: BorderRadius.circular(50)),
+                                                            ),
+                                                            FlatButton(
+                                                              child: Text("Reject"),
+                                                              onPressed: () {
+                                                                Navigator.pop(context, "");
+                                                                MemberApproveReject(map1[index]["CONTACT_NO"].toString(), 2);
+                                                              },
+                                                              shape: RoundedRectangleBorder(side: BorderSide(
+                                                                  color: Colors.blue,
+                                                                  width: 1,
+                                                                  style: BorderStyle.solid
+                                                              ), borderRadius: BorderRadius.circular(50)),
+                                                            )
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+
+                                                  },
+                                                ),
                                                 // subtitle: Text(snapshot.data[index]),
                                               ]))));
                             },

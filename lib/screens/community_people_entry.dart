@@ -6,8 +6,6 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mysql1/mysql1.dart';
 import 'dart:convert';
 
-
-
 class CommunityEntryScreen extends StatefulWidget {
   @override
   State<CommunityEntryScreen> createState() => CommunityEntry();
@@ -16,11 +14,10 @@ class CommunityEntryScreen extends StatefulWidget {
 enum ImageSourceType { gallery, camera }
 
 class CommunityEntry extends State<CommunityEntryScreen> {
+  var _formKey = GlobalKey<FormState>();
   final txtEditContr1 = TextEditingController();
   final txtEditContr2 = TextEditingController();
   final loginResultxt = TextEditingController();
-
-
 
   final tecName = TextEditingController();
   final tecFName = TextEditingController();
@@ -29,11 +26,12 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   final tecBloodGroup = TextEditingController();
   final tecAddress = TextEditingController();
 
-
   var loadData = 0;
   late SharedPreferences prefs;
+
   // File imageFile2 = File(AssetImage('assets/images/dummy.png').toString());
   late File imageFile;
+
   // int imageFileInitialized = 0;
   bool _load = false;
   bool isLoading = false;
@@ -41,6 +39,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   bool addButtonEnable = true;
   var Lib;
   String dataSavingMsg = 'Please Enter All the values and press Add button';
+
   Future<String> saveValues() async {
     return await Future.delayed(Duration(seconds: 2), () async {
       var Lib = new Library();
@@ -51,58 +50,93 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       // log(base64Image);
       // log(tecFName.text);
 
-      String sql1 = "INSERT INTO `community_member` "
-          "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, "
-          "`BLOOD_GROUP`, `ADDRESS`, `CREATED_AT`)"
-          "VALUES('"+tecName.text+"',"
-          "'"+tecFName.text+"',"
-          "'"+tecPhone.text+"',"
-          "'"+base64Image+"',"
-          "'"+selectedValue+"',"
-          "'"+tecAddress.text+"',"
-          "now())";
+      //Check duplicate mobile number...
+      String mobileCheckSQL = "SELECT CONTACT_NO FROM community_member "
+              "WHERE CONTACT_NO = '" +
+          mobileNumberInputString +
+          "'";
 
-      // log(sql1);
+      var res = await db.runSQL(mobileCheckSQL);
+      print(res.length);
 
-      var res = await db.runInsertUpdateSQL(sql1);
-      dataSavingMsg = "Data Saved Successfully for - "+tecFName.text + " (" +tecPhone.text+ ")" ;
-      if(res == 0)
-      {
-      setState(() {
-        isLoading = false;
-        dataSavingMsg = "Data Could Not Saved. Please try again and check internet connection...";
-        addButtonEnable = true;
-        Lib.createSnackBar(dataSavingMsg, context);
-//        loadData = 0;
-      });
-
-      }
-      else
-      {
-        // Lib.createSnackBar(dataSavingMsg, context);
-        Lib.createSnackBar(dataSavingMsg, context);
+      if (res.length > 0) {
+        ///Duplicate mobile number found {
+        // log("3333333333");
         setState(() {
-          isLoading = false;
-          tecName.text = '';
-          tecFName.text = '';
-          tecPhone.text = '';
-          tecAddress.text = '';
-          tecEmail.text = '';
-          selectedValue = '';
           addButtonEnable = true;
-          loadData = 0;
-          _load = false;
-          dataSavingMsg = 'Enter new people information and press Add buttion';
+          isLoading = false;
+          dataSavingMsg =
+          "Phone/Mobile number has already been given by someone else. Please enter another...";
+          addButtonEnable = true;
+          Lib.createSnackBar(dataSavingMsg, context);
         });
-        // var route = ModalRoute.of(context)?.settings.name;
-        // Navigator.popAndPushNamed(context, route.toString());
+        return dataSavingMsg;
+      }else {
+        String sql1 = "INSERT INTO `community_member` "
+            "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, "
+            "`BLOOD_GROUP`, `ADDRESS`, `CREATED_AT`)"
+            "VALUES('" +
+            tecName.text +
+            "',"
+                "'" +
+            tecFName.text +
+            "',"
+                "'" +
+            mobileNumberInputString +
+            "',"
+                "'" +
+            base64Image +
+            "',"
+                "'" +
+            selectedValue +
+            "',"
+                "'" +
+            tecAddress.text +
+            "',"
+                "now())";
+
+        // log(sql1);
+
+        res = await db.runInsertUpdateSQL(sql1);
+        dataSavingMsg = "Data Saved Successfully for - " +
+            tecFName.text +
+            " (" +
+            mobileNumberInputString +
+            ")";
+        if (res == 0) {
+          setState(() {
+            isLoading = false;
+            dataSavingMsg =
+            "Data Could Not Saved. Please try again and check internet connection...";
+            addButtonEnable = true;
+            Lib.createSnackBar(dataSavingMsg, context);
+//        loadData = 0;
+          });
+        } else {
+          // Lib.createSnackBar(dataSavingMsg, context);
+          Lib.createSnackBar(dataSavingMsg, context);
+          setState(() {
+            isLoading = false;
+            tecName.text = '';
+            tecFName.text = '';
+            tecPhone.text = '';
+            tecAddress.text = '';
+            tecEmail.text = '';
+            selectedValue = '';
+            addButtonEnable = true;
+            loadData = 0;
+            _load = false;
+            dataSavingMsg =
+            'Enter new people information and press Add buttion';
+          });
+          // var route = ModalRoute.of(context)?.settings.name;
+          // Navigator.popAndPushNamed(context, route.toString());
+        }
+
+        // log(res);
       }
-
-      // log(res);
-
       return dataSavingMsg;
     });
-
   }
 
   @override
@@ -113,103 +147,35 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   }
 
   String selectedValue = '';
-
-  String validMobileMsg = "";
-  String validateMobile(String value) {
-    String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-    RegExp regExp = new RegExp(pattern);
-    if (value.length == 0) {
-      return 'Please enter mobile number';
-    }
-    else if (!regExp.hasMatch(value)) {
-      return 'Please enter valid mobile number';
-    }
-    return "";
-  }
-
-  String MobileValidateMsg = "";
-  Future<String> validatePhoneNumber() async {
-    return await Future.delayed(Duration(seconds: 2), () async {
-      if(tecPhone.text.isEmpty) return "";
-
-      if(!tecPhone.text.isEmpty && tecPhone.text.length != 11 ) {
-        MobileValidateMsg = "Please Enter 11 Digit Mobile Number";
-      }
-
-      var Lib = new Library();
-      var db = new dbCOn();
-
-      String sql1 = "";
-
-      // log(sql1);
-
-      var res = await db.runInsertUpdateSQL(sql1);
-      dataSavingMsg = "Data Saved Successfully for - "+tecFName.text + " (" +tecPhone.text+ ")" ;
-      if(res == 0)
-      {
-        setState(() {
-          isLoading = false;
-          dataSavingMsg = "Data Could Not Saved. Please try again and check internet connection...";
-          addButtonEnable = true;
-          Lib.createSnackBar(dataSavingMsg, context);
-//        loadData = 0;
-        });
-
-      }
-      else
-      {
-        // Lib.createSnackBar(dataSavingMsg, context);
-        Lib.createSnackBar(dataSavingMsg, context);
-        setState(() {
-          isLoading = false;
-          tecName.text = '';
-          tecFName.text = '';
-          tecPhone.text = '';
-          tecAddress.text = '';
-          tecEmail.text = '';
-          selectedValue = '';
-          addButtonEnable = true;
-          loadData = 0;
-          _load = false;
-          dataSavingMsg = 'Enter new people information and 2 press Add buttion';
-        });
-        // var route = ModalRoute.of(context)?.settings.name;
-        // Navigator.popAndPushNamed(context, route.toString());
-      }
-
-      // log(res);
-
-      return dataSavingMsg;
-    });
-
-  }
-
+  String mobileNumberInputString = '';
 
   InputDecorator dropBtnKeyVal(var keyValPairs) {
     // List<Map> keyValues = {"A":1, "B":1 };
     List<Map> keyValues = [
-      {'Text': 'Select Blood Group', 'Value':''},
-      {'Text': 'A', 'Value':'A'},
-      {'Text': 'B+', 'Value':'B+'},
-      {'Text': 'AB+', 'Value':'AB+'},
-      {'Text': 'O+', 'Value':'O+'},
-      {'Text': 'A-', 'Value':'A-'},
-      {'Text': 'B-', 'Value':'B-'},
-      {'Text': 'AB-', 'Value':'AB-'},
-      {'Text': 'O-', 'Value':'O-'}, ];
+      {'Text': 'Select Blood Group', 'Value': ''},
+      {'Text': 'A', 'Value': 'A'},
+      {'Text': 'B+', 'Value': 'B+'},
+      {'Text': 'AB+', 'Value': 'AB+'},
+      {'Text': 'O+', 'Value': 'O+'},
+      {'Text': 'A-', 'Value': 'A-'},
+      {'Text': 'B-', 'Value': 'B-'},
+      {'Text': 'AB-', 'Value': 'AB-'},
+      {'Text': 'O-', 'Value': 'O-'},
+    ];
     // Map keyValues = {'A': 'A'}, {'B': 'B'};
     // List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
     return InputDecorator(
       decoration: const InputDecoration(border: OutlineInputBorder()),
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
+          borderRadius: BorderRadius.circular(8),
 
-          borderRadius:BorderRadius.circular(8),
-
-          underline: Container(), //empty line
+          underline: Container(),
+          //empty line
           style: TextStyle(fontSize: 15, color: Colors.black),
           dropdownColor: Colors.cyan,
-          iconEnabledColor: Colors.red, //Icon color
+          iconEnabledColor: Colors.red,
+          //Icon color
 
           isExpanded: true,
           // isDense: true,
@@ -227,7 +193,6 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               child: Text(m['Text']),
             );
           }).toList(),
-
         ),
       ),
     );
@@ -271,21 +236,19 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     Lib = new Library();
 
     var customTxtB = new customUI();
 
     return Scaffold(
-
       // resizeToAvoidBottomInset: false,
       appBar: appBar.crtAppBar("Add New People", context),
-      body: SingleChildScrollView(
-
-      child: Container(
+      body: Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+          child: Container(
         padding: const EdgeInsets.all(10.0),
         child: Center(
           // Center is a layout widget. It takes a single child and positions it
@@ -326,37 +289,33 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               customTxtB.customTextBoxCrt(tecFName, "Father's Name"),
               SizedBox(height: 10),
 
-
-
               IntlPhoneField(
                 controller: tecPhone,
-                validator: (value){
-                  checkPhoneNumber(){
-                    return false;
-                  }
-                  // print("validation called..."+value.toString());
-                  // return false;
-                  // if(phone?.completeNumber != "+8801711393336")
-                  //   {
-                  //     return "false";
-                  //   }
+                validator: (phone) {
+                  // print(validatorMessage);
+
                 },
                 // keyboardType: TextInputType.emailAddress,
                 initialCountryCode: 'BD',
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: 'Mobile Number',
                   border: OutlineInputBorder(
                     borderSide: BorderSide(),
                   ),
                 ),
                 onChanged: (phone) {
+
                   print(phone.completeNumber);
+                  // print(IntlPhoneField().invalidNumberMessage);
+                  mobileNumberInputString = phone.completeNumber.toString();
+
+                  // tecPhone.text = phone.completeNumber;
+                  // print(tecPhone.);
                 },
                 onCountryChanged: (country) {
                   print('Country changed to: ' + country.name);
                 },
               ),
-
 
               SizedBox(height: 10),
               // customTxtB.customTextBoxCrt(tecPhone, "Cell Phone"),
@@ -371,44 +330,51 @@ class CommunityEntry extends State<CommunityEntryScreen> {
 
               isLoading
                   ? Center(
-                child: CircularProgressIndicator(),
-              ):
-              Text(dataSavingMsg),
+                      child: CircularProgressIndicator(),
+                    )
+                  : Text(dataSavingMsg),
             ],
           ),
         ),
-      )),
-
-
-
+      )
+      ),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addButtonEnable ? () {
-          if (tecName.text == '' || tecFName.text =='' || tecPhone.text == '' ||
-              tecAddress.text == '' || _load == false ||
-          selectedValue == ''
-          ) {
-            if (isSnackbarActive == false) {
-              isSnackbarActive = true;
-              Lib.createSnackBar2("Enter All the values...", context);
-            }
-          } else {
-            setState(() {
-              isLoading = true;
-              loadData = 1;
-              addButtonEnable = false;
-            });
-            saveValues();
-          }
-        } : null,
+        onPressed: addButtonEnable == true ||  addButtonEnable == false
+            ? () {
+                if (tecName.text == '' ||
+                    tecFName.text == '' ||
+                    tecPhone.text == '' ||
+                    tecAddress.text == '' ||
+                    _load == false ||
+                    selectedValue == '' ||
+                    _formKey.currentState?.validate() == false) {
+                  if (isSnackbarActive == false) {
+                    isSnackbarActive = true;
+                    Lib.createSnackBar2("Enter right values in all the fields...", context);
+                  }
+                } else {
+
+
+
+                  setState(() {
+                    isLoading = true;
+                    loadData = 1;
+                    addButtonEnable = false;
+                  });
+                  saveValues();
+                }
+              }
+            : null,
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
         tooltip: 'Add New People',
         child: Text("Add"),
         // const Icon(Icons.ten_k_outlined),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+
     );
   }
 }
-
 
 class _MyHomePageState extends State<DetailPage> {
   String s = "ert";

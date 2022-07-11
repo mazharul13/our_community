@@ -76,13 +76,14 @@ class dbCOn {
 
 
   Future runInsertUpdateSQL(var sql) async {
+    var res = 0;
     try{
-      await getConnection().then((conn) {
-        // log("conn...=="+sql);
-        conn.query(sql).then((result) {
+      await getConnection().then((conn) async {
+        log("conn...=="+sql);
+        await conn.query(sql).then((result) {
           // print(result);
           // return result;
-          return 1;
+          res = 1;
         });
       });
     }
@@ -95,29 +96,65 @@ class dbCOn {
     on Exception catch (exception) {
     // only executed if error is of type Exception
       print(exception.runtimeType);
-      return 0;
+      res = 0;
+
 
     } catch (error) {
     // executed for errors of all types other than Exception
     print(error.runtimeType);
-    return 0;
+
+    res = 0;
     }
+    return res;
   }
 
 
-  Future runSQL(var sql) async {
+
+  Future runSQL4(var sql) async {
+
+    List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
     try{
-      await getConnection().then((conn) {
+      await getConnection().then((conn) async {
         log("conn...=="+sql);
-        conn.query(sql).then((result) {
-          print(result);
-          return result;
+        await conn.query(sql).then((result) {
+          // print({'type':result});
+          // print(json.decode(result));
+
+          for (var r in result) {
+            m = {"MEMBER_NAME": r["MEMBER_NAME"], "CONTACT_NO": r["CONTACT_NO"],
+              "ADDRESS": r["ADDRESS"], "BLOOD_GROUP": r["BLOOD_GROUP"],
+              "MEMBER_FNAME": r["MEMBER_FNAME"]
+            };
+            map1.add(m);
+          }
         });
       });
     }
     catch(err){
       print(err.runtimeType);
     }
+    // log(map1.length.toString()+"3333");
+    return map1;
+  }
+
+  Future runSQL(var sql) async {
+    var res = null;
+    try{
+      await getConnection().then((conn) async{
+        log("conn...=="+sql);
+        await conn.query(sql).then((result) {
+
+          res = result;
+          // return result;
+        });
+      });
+    }
+    catch(err){
+      print(err.runtimeType);
+    }
+
+    return res;
   }
 
 
@@ -178,3 +215,34 @@ class Library {
 }
 
 
+
+showAlertDialog2(BuildContext context){
+  // set up the buttons
+  Widget cancelButton = FlatButton(
+    child: Text("Cancel"),
+    onPressed:  () {
+      Navigator.of(context).pop("Cancel");},
+  );
+  Widget continueButton = FlatButton(
+    child: Text("Continue"),
+    onPressed:  () {
+      Navigator.of(context).pop("Continue");},
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("AlertDialog"),
+    content: Text("Would you like to continue learning how to use Flutter alerts?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context){
+      // print(alert);
+      return alert;
+    },
+  );
+}

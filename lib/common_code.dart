@@ -11,7 +11,7 @@ class appBar {
     return PopupMenuItem(
       child:  Row(
         children: [
-          Icon(iconData, color: Colors.black,),
+          // Icon(iconData, color: Colors.black,),
           Text(title),
         ],
       ),
@@ -39,6 +39,7 @@ class appBar {
                 _buildPopupMenuItem("My Profile", Icons.search, 0),
                 _buildPopupMenuItem("New Member", Icons.search, 1),
                 _buildPopupMenuItem("List of Member", Icons.search, 2),
+                _buildPopupMenuItem("List of Member (Pending)", Icons.search, 22),
                 _buildPopupMenuItem("Add Payment", Icons.search, 3),
                 _buildPopupMenuItem("New Issue", Icons.search, 4),
                 _buildPopupMenuItem("List of Issue", Icons.search, 5),
@@ -70,6 +71,14 @@ class appBar {
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder:
                     (context) => MemberListScreen()
+                )
+            );
+            log("Settings menu is selected.");
+          }
+          else if (value == 22) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder:
+                    (context) => MemberListPendingScreen()
                 )
             );
             log("Settings menu is selected.");
