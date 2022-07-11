@@ -35,156 +35,183 @@ class MemberList extends State<MemberListScreen> {
     var customTxtB = new customUI();
 
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      appBar: appBar.crtAppBar("Member List", context),
-      body: SingleChildScrollView(
-          child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
+        // resizeToAvoidBottomInset: false,
+        appBar: appBar.crtAppBar("Member List", context),
+        body: Container(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Row(children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: SearchResultxt,
+                      decoration: InputDecoration(
+                        label: Text("Enter name or mobile number"),
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (text){
+                        if(text == '')
+                          {
+                            setState(() {
+                              map1 = map1_backup;
+                            });
 
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
+                          }
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    iconSize: 30,
+                    onPressed: () {
+                      String text = SearchResultxt.text;
+                      if (text.length == 0) {
+                        if (isSnackbarActive == false) {
+                          isSnackbarActive = true;
+                          Lib.createSnackBar2(
+                              "Please enter any search value", context);
+                        }
+                        if (map1.length != map1_backup.length) {
+                          setState(() {
+                            map1 = map1_backup;
+                          });
+                        }
+                      } else if (text.length >= 1) {
+                        // log(text);
+                        List<Map> map2 = [];
+                        text = text.toLowerCase();
+                        map1.forEach((m) {
+                          if (m["MEMBER_NAME"].toLowerCase().contains(text)
+                          || m["CONTACT_NO"].toLowerCase().contains(text)) map2.add(m);
 
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(height: 10),
-              TextField(
-                controller: SearchResultxt,
-                decoration: InputDecoration(
-                  label: Text("Enter value to search..."),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.search),
-                iconSize: 50,
-                onPressed: () {
-                  String text = SearchResultxt.text;
-                  if (text.length == 0) {
-                    if (isSnackbarActive == false) {
-                      isSnackbarActive = true;
-                      Lib.createSnackBar2(
-                          "Please enter any search value", context);
-                    }
-                    if (map1.length != map1_backup.length) {
-                      setState(() {
-                        map1 = map1_backup;
-                      });
-                    }
-                  } else if (text.length >= 1) {
-                    // log(text);
-                    List<Map> map2 = [];
+                        });
 
-                    map1.forEach((m) {
-                      if (m["MEMBER_NAME"] == text) map2.add(m);
-                    });
-
-                    if (map2.length == 0) {
-                      if (isSnackbarActive == false) {
-                        isSnackbarActive = true;
-                        Lib.createSnackBar2(
-                            "No People found, please try another search",
-                            context);
+                        if (map2.length == 0) {
+                          if (isSnackbarActive == false) {
+                            isSnackbarActive = true;
+                            Lib.createSnackBar2(
+                                "No People found, please try another search",
+                                context);
+                          }
+                        } else {
+                          setState(() {
+                            map1 = map2;
+                          });
+                        }
                       }
-                    } else {
-                      setState(() {
-                        map1 = map2;
-                      });
-                    }
-                  }
-                },
-              ),
-              SizedBox(height: 10),
+                    },
+                  ),
+                ]),
+                SizedBox(height: 10),
+                // new SingleChildScrollView(
+                //   scrollDirection: Axis.vertical,
+                //   child:
+                Expanded(
+                    // padding: EdgeInsets.all(1), //You can use EdgeInsets like above
+                    // margin: EdgeInsets.all(2),
+                    child: map1.length != 0
+                        ? ListView.builder(
+                            // physics: NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: map1.length,
+                            itemBuilder: (context, int index) {
+                              // log(data[index]["PHOTO_FILE"].toString());
+                              // log("dddddddddd");
 
-              Container(
-                  // padding: EdgeInsets.all(1), //You can use EdgeInsets like above
-                  // margin: EdgeInsets.all(2),
-                  child: map1.length != 0
-                      ? ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: map1.length,
-                          itemBuilder: (context, int index) {
-                            // log(data[index]["PHOTO_FILE"].toString());
-                            // log("dddddddddd");
-
-                            return Card(
-                                elevation: 8,
-                                color: Colors.lightGreen,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                    Text(map1[index]["MEMBER_NAME"] + "("+map1[index]["CONTACT_NO"]+")",
-                                        textAlign: TextAlign.left
+                              return InkWell(
+                                  // child: Card(......),
+                              onTap: () {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder:
+                                        (context) => ProfilePageScreen(map1[index]["CONTACT_NO"].toString())
+                                    )
+                                );
+                              print("Click event on Container" + map1[index]["CONTACT_NO"]);
+                              },
+                                child: Card(
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    //<-- SEE HERE
+                                    borderRadius: BorderRadius.circular(5),
+                                    side: BorderSide(
+                                      color: Colors.greenAccent,
                                     ),
-                                  Text(map1[index]["ADDRESS"].toString() + "("+map1[index]["BLOOD_GROUP"].toString()+")", textAlign: TextAlign.left
                                   ),
+                                  child: Padding(
 
-                                  // subtitle: Text(snapshot.data[index]),
-                                ]));
-                          },
-                        )
-                      : FutureBuilder(
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            // Checking if future is resolved or not
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              // If we got an error
-                              if (snapshot.hasError) {
-                                return Center(
-                                  child: Text(
-                                    '${snapshot.error} occurred',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                );
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
 
-                                // if we got our data
-                              } else if (snapshot.hasData) {
-                                // log(snapshot.data[0]);
-                                // Extracting data from snapshot object
-                                final data = snapshot.data;
-                                // print(data[0]["MEMBER_NAME"]);
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                                map1[index]["MEMBER_NAME"] +
+                                                    "(" +
+                                                    map1[index]["CONTACT_NO"] +
+                                                    ")",
+                                                textAlign: TextAlign.left),
+                                            Text(
+                                                "Blood Group: " +
+                                                    map1[index]["BLOOD_GROUP"]
+                                                        .toString(),
+                                                textAlign: TextAlign.left),
 
-                                return ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  itemCount: snapshot.data.length,
-                                  itemBuilder: (context, int index) {
-                                    // log(data[index]["PHOTO_FILE"].toString());
-                                    // log("dddddddddd");
+                                            Text(
+                                                "Address : " +
+                                                    map1[index]["ADDRESS"],
+                                                textAlign: TextAlign.left),
 
-                                    return new Card(
-                                        child: Column(children: <Widget>[
-                                      Text(map1[index]["MEMBER_NAME"] + "("+map1[index]["CONTACT_NO"]+")"
-                                      ),
-                                          Text(map1[index]["MEMBER_FNAME"] + "("+map1[index]["MEMBER_FNAME"]+")"
-                                          ),
+                                            // subtitle: Text(snapshot.data[index]),
+                                          ]))
 
-                                      // subtitle: Text(snapshot.data[index]),
-                                    ]));
-                                  },
-                                );
+                              ));
+                            },
+                          )
+                        : FutureBuilder(
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              // Checking if future is resolved or not
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                // If we got an error
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text(
+                                      '${snapshot.error} occurred',
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                  );
+
+                                  // if we got our data
+                                } else if (snapshot.hasData) {
+                                  // log(snapshot.data[0]);
+                                  // Extracting data from snapshot object
+                                  final data = snapshot.data;
+                                  // print(data[0]["MEMBER_NAME"]);
+
+                                  return Text("Data Loaded...");
+                                }
                               }
-                            }
 
-                            // Displaying LoadingSpinner to indicate waiting state
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          },
+                              // Displaying LoadingSpinner to indicate waiting state
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
 
-                          // Future that needs to be resolved
-                          // inorder to display something on the Canvas
-                          future: MemberListFuture(),
-                        )),
-            ],
+                            // Future that needs to be resolved
+                            // inorder to display something on the Canvas
+                            future: MemberListFuture(),
+                          ))
+              ],
+            ),
           ),
-        ),
-      )),
-    );
+        ));
   }
 }

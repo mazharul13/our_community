@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:calculator/includes_file.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mysql1/mysql1.dart';
 import 'dart:convert';
 
@@ -36,14 +35,13 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   late File imageFile;
   // int imageFileInitialized = 0;
   bool _load = false;
-  bool isLoading = false;
 
   bool addButtonEnable = true;
   var Lib;
-  String dataSavingMsg = 'Please Enter All the values and press Add button';
+
+
   Future<String> saveValues() async {
     return await Future.delayed(Duration(seconds: 2), () async {
-      var Lib = new Library();
       var db = new dbCOn();
       List<int> imageBytes = await imageFile.readAsBytesSync();
       String base64Image = base64Encode(await imageFile.readAsBytes());
@@ -65,42 +63,31 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       // log(sql1);
 
       var res = await db.runInsertUpdateSQL(sql1);
-      dataSavingMsg = "Data Saved Successfully for - "+tecFName.text + " (" +tecPhone.text+ ")" ;
+      String alertMsg = "Data Saved Successfully for - "+tecFName.text + " (" +tecPhone.text+ ")" ;
       if(res == 0)
       {
+      alertMsg = "Data Could Not Saved. Please try again and check internet connection...";
       setState(() {
-        isLoading = false;
-        dataSavingMsg = "Data Could Not Saved. Please try again and check internet connection...";
         addButtonEnable = true;
-        Lib.createSnackBar(dataSavingMsg, context);
-//        loadData = 0;
+        loadData = 0;
       });
 
       }
       else
       {
-        // Lib.createSnackBar(dataSavingMsg, context);
-        Lib.createSnackBar(dataSavingMsg, context);
+        Lib.createSnackBar(alertMsg, context);
         setState(() {
-          isLoading = false;
-          tecName.text = '';
-          tecFName.text = '';
-          tecPhone.text = '';
-          tecAddress.text = '';
-          tecEmail.text = '';
-          selectedValue = '';
           addButtonEnable = true;
           loadData = 0;
-          _load = false;
-          dataSavingMsg = 'Enter new people information and press Add buttion';
         });
+
         // var route = ModalRoute.of(context)?.settings.name;
         // Navigator.popAndPushNamed(context, route.toString());
       }
 
       // log(res);
 
-      return dataSavingMsg;
+      return alertMsg;
     });
 
   }
@@ -113,80 +100,9 @@ class CommunityEntry extends State<CommunityEntryScreen> {
   }
 
   String selectedValue = '';
-
-  String validMobileMsg = "";
-  String validateMobile(String value) {
-    String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-    RegExp regExp = new RegExp(pattern);
-    if (value.length == 0) {
-      return 'Please enter mobile number';
-    }
-    else if (!regExp.hasMatch(value)) {
-      return 'Please enter valid mobile number';
-    }
-    return "";
-  }
-
-  String MobileValidateMsg = "";
-  Future<String> validatePhoneNumber() async {
-    return await Future.delayed(Duration(seconds: 2), () async {
-      if(tecPhone.text.isEmpty) return "";
-
-      if(!tecPhone.text.isEmpty && tecPhone.text.length != 11 ) {
-        MobileValidateMsg = "Please Enter 11 Digit Mobile Number";
-      }
-
-      var Lib = new Library();
-      var db = new dbCOn();
-
-      String sql1 = "";
-
-      // log(sql1);
-
-      var res = await db.runInsertUpdateSQL(sql1);
-      dataSavingMsg = "Data Saved Successfully for - "+tecFName.text + " (" +tecPhone.text+ ")" ;
-      if(res == 0)
-      {
-        setState(() {
-          isLoading = false;
-          dataSavingMsg = "Data Could Not Saved. Please try again and check internet connection...";
-          addButtonEnable = true;
-          Lib.createSnackBar(dataSavingMsg, context);
-//        loadData = 0;
-        });
-
-      }
-      else
-      {
-        // Lib.createSnackBar(dataSavingMsg, context);
-        Lib.createSnackBar(dataSavingMsg, context);
-        setState(() {
-          isLoading = false;
-          tecName.text = '';
-          tecFName.text = '';
-          tecPhone.text = '';
-          tecAddress.text = '';
-          tecEmail.text = '';
-          selectedValue = '';
-          addButtonEnable = true;
-          loadData = 0;
-          _load = false;
-          dataSavingMsg = 'Enter new people information and 2 press Add buttion';
-        });
-        // var route = ModalRoute.of(context)?.settings.name;
-        // Navigator.popAndPushNamed(context, route.toString());
-      }
-
-      // log(res);
-
-      return dataSavingMsg;
-    });
-
-  }
-
-
-  InputDecorator dropBtnKeyVal(var keyValPairs) {
+  DropdownButton dropBtnKeyVal(var keyValPairs) {
     // List<Map> keyValues = {"A":1, "B":1 };
+
     List<Map> keyValues = [
       {'Text': 'Select Blood Group', 'Value':''},
       {'Text': 'A', 'Value':'A'},
@@ -199,37 +115,31 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       {'Text': 'O-', 'Value':'O-'}, ];
     // Map keyValues = {'A': 'A'}, {'B': 'B'};
     // List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
-    return InputDecorator(
-      decoration: const InputDecoration(border: OutlineInputBorder()),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
+    return DropdownButton(
 
-          borderRadius:BorderRadius.circular(8),
+      borderRadius:BorderRadius.circular(12),
+      underline: Container(), //empty line
+      style: TextStyle(fontSize: 18, color: Colors.black),
+      dropdownColor: Colors.cyan,
+      iconEnabledColor: Colors.red, //Icon color
 
-          underline: Container(), //empty line
-          style: TextStyle(fontSize: 15, color: Colors.black),
-          dropdownColor: Colors.cyan,
-          iconEnabledColor: Colors.red, //Icon color
+      isExpanded: true,
+      // isDense: true,
+      value: selectedValue,
+      onChanged: (value) {
+        setState(() {
+          selectedValue = value;
+        });
+        print(value);
+      },
 
-          isExpanded: true,
-          // isDense: true,
-          value: selectedValue,
-          onChanged: (value) {
-            setState(() {
-              selectedValue = value.toString();
-            });
-            print(value);
-          },
+      items: keyValues.map((Map m) {
+        return DropdownMenuItem<String>(
+          value: m['Value'],
+          child: Text(m['Text']),
+        );
+      }).toList(),
 
-          items: keyValues.map((Map m) {
-            return DropdownMenuItem<String>(
-              value: m['Value'],
-              child: Text(m['Text']),
-            );
-          }).toList(),
-
-        ),
-      ),
     );
   }
 
@@ -271,20 +181,16 @@ class CommunityEntry extends State<CommunityEntryScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     Lib = new Library();
 
     var customTxtB = new customUI();
 
     return Scaffold(
-
       // resizeToAvoidBottomInset: false,
       appBar: appBar.crtAppBar("Add New People", context),
       body: SingleChildScrollView(
-
       child: Container(
         padding: const EdgeInsets.all(10.0),
         child: Center(
@@ -325,42 +231,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(tecFName, "Father's Name"),
               SizedBox(height: 10),
-
-
-
-              IntlPhoneField(
-                controller: tecPhone,
-                validator: (value){
-                  checkPhoneNumber(){
-                    return false;
-                  }
-                  // print("validation called..."+value.toString());
-                  // return false;
-                  // if(phone?.completeNumber != "+8801711393336")
-                  //   {
-                  //     return "false";
-                  //   }
-                },
-                // keyboardType: TextInputType.emailAddress,
-                initialCountryCode: 'BD',
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                ),
-                onChanged: (phone) {
-                  print(phone.completeNumber);
-                },
-                onCountryChanged: (country) {
-                  print('Country changed to: ' + country.name);
-                },
-              ),
-
-
-              SizedBox(height: 10),
-              // customTxtB.customTextBoxCrt(tecPhone, "Cell Phone"),
-
+              customTxtB.customTextBoxCrt(tecPhone, "Cell Phone"),
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(tecEmail, "Email"),
               SizedBox(height: 10),
@@ -368,12 +239,49 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(tecAddress, "Address"),
               SizedBox(height: 10),
+              Container(
+                child: loadData == 1
+                    ? FutureBuilder(
+                  builder:
+                      (BuildContext context, AsyncSnapshot snapshot) {
+                    // Checking if future is resolved or not
+                    if (snapshot.connectionState ==
+                        ConnectionState.done) {
+                      // If we got an error
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            '${snapshot.error} occurred',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        );
 
-              isLoading
-                  ? Center(
-                child: CircularProgressIndicator(),
-              ):
-              Text(dataSavingMsg),
+                        // if we got our data
+                      } else if (snapshot.hasData) {
+                        // log(snapshot.data[0]);
+                        // Extracting data from snapshot object
+                        final data = snapshot.data as String;
+                        return Center(
+                          child: Text(
+                            '$data',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        );
+                      }
+                    }
+
+                    // Displaying LoadingSpinner to indicate waiting state
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+
+                  // Future that needs to be resolved
+                  // inorder to display something on the Canvas
+                  future: saveValues(),
+                )
+                    : SizedBox(),
+              ),
             ],
           ),
         ),
@@ -393,11 +301,9 @@ class CommunityEntry extends State<CommunityEntryScreen> {
             }
           } else {
             setState(() {
-              isLoading = true;
               loadData = 1;
               addButtonEnable = false;
             });
-            saveValues();
           }
         } : null,
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
@@ -458,3 +364,39 @@ class _MyHomePageState extends State<DetailPage> {
     );
   }
 }
+
+
+/*
+*               Focus(
+                child: TextField(
+                  controller: tecPhone,
+
+                  decoration: InputDecoration(
+                    label: Text("Cell Phone"),
+                    border: OutlineInputBorder(),
+                    hintText: "Enter Cell Phone Number",
+                  ),
+                ),
+                onFocusChange: (hasFocus) {
+                  if(hasFocus) {
+                    print("Got  focus");
+                    // do stuff
+                  }
+                  else
+                  {
+                    if(tecPhone.text != '') {
+                      setState(() {
+                        validMobileMsg = validateMobile(tecPhone.text);
+                      });
+                      // validMsg;
+                    }
+                    // validatePhoneNumber();
+                  }
+                },
+              ),
+
+              validMobileMsg != '' ?
+                Text(validMobileMsg)
+              : Text(validMobileMsg),
+*
+* */
