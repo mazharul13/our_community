@@ -4,16 +4,36 @@ import 'package:flutter/material.dart';
 
 class customUI
 {
-  TextField customTextBoxCrt(var contr, var txtLabel)
+  TextField customTextBoxCrt(var contr, var txtLabel, {int passField = 0})
   {
-    return TextField(
-      controller: contr,
-      decoration: InputDecoration(
-        label: Text(txtLabel.toString()),
-        border: OutlineInputBorder(),
-        hintText: 'Enter '+txtLabel.toString(),
-      ),
-    );
+
+    if(passField == 1) {
+      return TextField(
+        controller: contr,
+
+        obscureText: true,
+        enableSuggestions: false,
+        autocorrect: false,
+        decoration: InputDecoration(
+          label: Text(txtLabel.toString()),
+          border: OutlineInputBorder(),
+          hintText: 'Enter ' + txtLabel.toString(),
+        ),
+      );
+    }
+    else
+      {
+        return TextField(
+          controller: contr,
+
+          decoration: InputDecoration(
+            label: Text(txtLabel.toString()),
+            border: OutlineInputBorder(),
+            hintText: 'Enter ' + txtLabel.toString(),
+          ),
+        );
+
+      }
   }
 
 

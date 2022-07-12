@@ -246,3 +246,56 @@ showAlertDialog2(BuildContext context){
     },
   );
 }
+
+
+// Future<List<String>> getData_back(var id, var passwd) async {
+//   List<String> data = [];
+//
+//   // prefs = await SharedPreferences.getInstance();
+//   // prefs.setString("NAME", "Test Name");
+//   // prefs.clear();
+//
+//   return await Future.delayed(Duration(seconds: 2), () async {
+//     // var db = new dbCOn();
+//     String sql = "select MEMBER_NAME, MEMBER_FNAME, ADDRESS, CONTACT_NO from community_member where CONTACT_NO = '" +
+//         id +
+//         "' AND PASS_WORD = '" +
+//         passwd +
+//         "'";
+//     // sql = "select * from community";
+//     log(sql);
+//
+//     // SharedPreferences prefs;
+//     // prefs = await SharedPreferences.getInstance();
+//     // prefs.clear();
+//
+//     var settings = ConnectionSettings(
+//         host: '103.219.147.25',
+//         port: 3306,
+//         user: 'mazharul',
+//         db: 'flutter_test',
+//         password: 'Mz#20BF!t22');
+//
+//     var db = MySqlConnection.connect(settings);
+//
+//     var userName = "";
+//     userName = await db.then((conn) async {
+//       log("conn...==" + sql);
+//       await conn.query(sql).then((result) {
+//         for (var r in result) {
+//           // prefs.setString("UserName", r["NAME"]);
+//           userName = r["NAME"];
+//           data.add(userName);
+//           // log(r["NAME"].toString());
+//         }
+//         // res = 1;
+//         // return 1;
+//       });
+//       // prefs.reload();
+//       return prefs.getString("UserName").toString();
+//     });
+//     // data.add(Text(userName));
+//     // return userName;
+//     return data;
+//   });
+// }
