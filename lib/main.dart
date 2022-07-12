@@ -7,13 +7,15 @@ import 'common_code.dart';
 
 
 
-void main() async {
-  var prefs = await SharedPreferences.getInstance();
-  if(prefs.getString("UserName").toString() != '')
-    {
-      LoginLogOut = "Logout";
-      LoggedInValuePage = 10;
-    }
+void main(){
+
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // if(prefs.getString("UserName").toString() != '')
+    // {
+    //   LoginLogOut = "Logout";
+    //   LoggedInValuePage = -6;
+    // }
+
   runApp(const MyApp());
 }
 

@@ -25,19 +25,31 @@ class MyProfilePage extends State<MyProfilePageScreen> {
 
   @override
   void initState() {
+    var Lib = new Library();
     super.initState();
     loadCounter();
   }
 
   void loadCounter() async {
     prefs = await SharedPreferences.getInstance();
-    log(prefs.getString("UserName").toString());
-    log("ddddddd");
+    // log(prefs.getString("UserName").toString());
+    // log("ddddddd");
     setState(() {
       UserName = prefs.getString("UserName").toString();
       FathersName = prefs.getString("FathersName").toString();
       ContactNo = prefs.getString("ContactNo").toString();
       Address = prefs.getString("Address").toString();
+      if(prefs.getString("UserName") != null) {
+        // log('dddddd3334444');
+        userLoggedIn = 1;
+      }
+      else
+        {
+          userLoggedIn = 0;
+
+        }
+
+
       // _counter = (prefs.getInt('counter') ?? 0);
     });
   }

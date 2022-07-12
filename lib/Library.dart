@@ -169,6 +169,18 @@ class Library {
   var result;
 
 
+  // Future loadValuesFromSession() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   if(prefs.getString("UserName").toString() != '')
+  //   {
+  //
+  //     LoginLogOut = "Logout";
+  //     LoggedInValuePage = 10;
+  //   }
+  //
+  //   log(prefs.getString("UserName").toString());
+  //
+  // }
 
   int loginCheck(var userID, var passwd) {
     var userInfo = List.filled(3, null, growable: false);
