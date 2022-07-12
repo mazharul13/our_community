@@ -14,6 +14,12 @@ class MyProfilePageScreen extends StatefulWidget {
 
 class MyProfilePage extends State<MyProfilePageScreen> {
   late SharedPreferences prefs;
+  String UserName = '';
+  String ContactNo = '';
+  String Address = '';
+  String BloodGroup = '';
+  String FathersName = '';
+
 
 
 
@@ -28,6 +34,10 @@ class MyProfilePage extends State<MyProfilePageScreen> {
     log(prefs.getString("UserName").toString());
     log("ddddddd");
     setState(() {
+      UserName = prefs.getString("UserName").toString();
+      FathersName = prefs.getString("FathersName").toString();
+      ContactNo = prefs.getString("ContactNo").toString();
+      Address = prefs.getString("Address").toString();
       // _counter = (prefs.getInt('counter') ?? 0);
     });
   }
@@ -41,11 +51,17 @@ class MyProfilePage extends State<MyProfilePageScreen> {
         // resizeToAvoidBottomInset: false,
         appBar: appBar.crtAppBar("My Profile Page", context),
         body: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              // Center is a layout widget. It takes a single child and positions it
-              // in the middle of the parent.
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+        SizedBox(height: 10),
+        Expanded(
                   child: Card(
+                      margin: EdgeInsets.all(10),
                       color: Colors.white,
                       shape: RoundedRectangleBorder(
                         //<-- SEE HERE
@@ -54,18 +70,26 @@ class MyProfilePage extends State<MyProfilePageScreen> {
                           color: Colors.greenAccent,
                         ),
                       ),
-                      child: Padding(
-                          padding: const EdgeInsets.all(8.0),
                           child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              // crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                     "Name: " +
-                                        prefs.getString("UserName").toString(),
+                                        UserName,
                                     textAlign: TextAlign.left),
                                 Text(
-                                    "Name: " +
-                                        "333333",
+                                    "Fathers' name: " +
+                                        FathersName,
+                                    textAlign: TextAlign.left),
+                                Text(
+                                    "Address: " +
+                                        Address,
+                                    textAlign: TextAlign.left),
+                                Text(
+                                    "Phone: " +
+                                        ContactNo,
                                     textAlign: TextAlign.left),
                                 // Text(
                                 //     "Address: " +
@@ -73,7 +97,7 @@ class MyProfilePage extends State<MyProfilePageScreen> {
                                 //     textAlign: TextAlign.left),
 
                                 // subtitle: Text(snapshot.data[index]),
-                              ])))),
-            ));
+                              ])))],
+            ))));
   }
 }

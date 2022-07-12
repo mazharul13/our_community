@@ -3,6 +3,11 @@ import 'dart:developer';
 
 import 'package:calculator/includes_file.dart';
 
+String LoginLogOut = "Login";
+// String LoginLogOut = "Login";
+int LoggedInValuePage = 11;
+
+
 class appBar {
   appBar() {}
 
@@ -36,18 +41,25 @@ class appBar {
             icon: Icon(Icons.menu),
             itemBuilder: (context) {
               return [
-                _buildPopupMenuItem("My Profile", Icons.search, 0),
+                _buildPopupMenuItem("My Profile", Icons.search, 10),
                 _buildPopupMenuItem("New Member", Icons.search, 1),
                 _buildPopupMenuItem("List of Member", Icons.search, 2),
                 _buildPopupMenuItem("List of Member (Pending)", Icons.search, 22),
                 _buildPopupMenuItem("Add Payment", Icons.search, 3),
                 _buildPopupMenuItem("New Issue", Icons.search, 4),
                 _buildPopupMenuItem("List of Issue", Icons.search, 5),
-                _buildPopupMenuItem("Login", Icons.search, 6),
+                _buildPopupMenuItem(LoginLogOut, Icons.search, LoggedInValuePage),
               ];
             }, onSelected: (value) {
-          if (value == 0) {
+          if (value == 10) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder:
+                    (context) => MyProfilePageScreen()
+                )
+            );
+
             log("My account menu is selected.");
+
           }
           else if (value == 1) {
             Navigator.pushReplacement(context,

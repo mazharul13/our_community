@@ -1,9 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/calc_screen.dart';
 import 'screens/community_people_entry.dart';
+import 'common_code.dart';
 
-void main() {
+
+
+void main() async {
+  var prefs = await SharedPreferences.getInstance();
+  if(prefs.getString("UserName").toString() != '')
+    {
+      LoginLogOut = "Logout";
+      LoggedInValuePage = 10;
+    }
   runApp(const MyApp());
 }
 
