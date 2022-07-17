@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/calc_screen.dart';
-import 'screens/community_people_entry.dart';
+import 'screens/home_screen.dart';
 import 'common_code.dart';
+
 
 
 
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(Duration(seconds: 2),
             ()=>Navigator.pushReplacement(context,
             MaterialPageRoute(builder:
-                (context) => CommunityEntryScreen()
+                (context) => HomePageScreen()
             )
         )
     );

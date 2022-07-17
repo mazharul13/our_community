@@ -10,12 +10,7 @@ class HomePageScreen extends StatefulWidget {
 
 class HomeScreenReal extends State<HomePageScreen> {
   late SharedPreferences prefs;
-  String UserName = '';
-  String ContactNo = '';
-  String Address = '';
-  String BloodGroup = '';
-  String FathersName = '';
-
+  String UserName = "";
 
   @override
   void initState() {
@@ -24,75 +19,74 @@ class HomeScreenReal extends State<HomePageScreen> {
   }
 
   void loadCounter() async {
-
     prefs = await SharedPreferences.getInstance();
-    // log(prefs.getString("UserName").toString());
-    // log("ddddddd");
     setState(() {
-      UserName = prefs.getString("UserName").toString();
-      FathersName = prefs.getString("FathersName").toString();
-      ContactNo = prefs.getString("ContactNo").toString();
-      Address = prefs.getString("Address").toString();
-      // _counter = (prefs.getInt('counter') ?? 0);
+      if (prefs.containsKey("UserName")) {
+        UserName = prefs.getString("UserName").toString();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     var Lib = new Library();
 
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
         appBar: appBar.crtAppBar("Our Community", context),
         body: Container(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-              // Center is a layout widget. It takes a single child and positions it
-              // in the middle of the parent.
+                // Center is a layout widget. It takes a single child and positions it
+                // in the middle of the parent.
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: 10),
-                    Expanded(
-                        child: Card(
-                            margin: EdgeInsets.all(10),
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              //<-- SEE HERE
-                              borderRadius: BorderRadius.circular(5),
-                              side: BorderSide(
-                                color: Colors.greenAccent,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: 10),
+                Expanded(
+                    child: Card(
+                        margin: EdgeInsets.all(10),
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          //<-- SEE HERE
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "বিসমিল্লাহির রাহমানির রাহিম ",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20),
                               ),
-                            ),
-                            child: Column(
+                              // Text(
+                              //   "আমাদের কমিউনিটি",
+                              //   textAlign: TextAlign.center,
+                              //   style: TextStyle(fontSize: 35),
+                              // ),
+                              Text(
+                                "কল্যাণমূলক সামাজিক পরিবর্তনের অঙ্গীকার",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              SizedBox(height: 10),
+                              Image.asset('assets/images/community_logo.jpg'),
+                              UserName.toString() != ""
+                                  ? Text(
+                                "Welcome : \n" + UserName,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20),
+                              )
+                                  : SizedBox(height: 10),
 
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                // crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                      "Name: " +
-                                          UserName,
-                                      textAlign: TextAlign.left),
-                                  Text(
-                                      "Fathers' name: " +
-                                          FathersName,
-                                      textAlign: TextAlign.left),
-                                  Text(
-                                      "Address: " +
-                                          Address,
-                                      textAlign: TextAlign.left),
-                                  Text(
-                                      "Phone: " +
-                                          ContactNo,
-                                      textAlign: TextAlign.left),
-                                  // Text(
-                                  //     "Address: " +
-                                  //         prefs.getString("Address").toString(),
-                                  //     textAlign: TextAlign.left),
 
-                                  // subtitle: Text(snapshot.data[index]),
-                                ])))],
-                ))));
+                              // subtitle: Text(snapshot.data[index]),
+                            ])))
+              ],
+            ))));
   }
 }

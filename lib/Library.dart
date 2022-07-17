@@ -46,6 +46,32 @@ class dbCOn {
     return map1;
   }
 
+  Future getIssues(var sql) async {
+
+    List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
+    try{
+      await getConnection().then((conn) async {
+        log("conn...=="+sql);
+        await conn.query(sql).then((result) {
+          // print({'type':result});
+          // print(json.decode(result));
+
+          for (var r in result) {
+            m = {"ISSUE_ID": r["ISSUE_ID"], "ISSUE_TITLE": r["ISSUE_TITLE"],
+              "ISSUE_DATES": r["ISSUE_DATES"]};
+            map1.add(m);
+          }
+        });
+      });
+    }
+    catch(err){
+      print(err.runtimeType);
+    }
+    // log(map1.length.toString()+"3333");
+    return map1;
+  }
+
   Future getMemberListWithPhoto(var sql) async {
 
     List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};

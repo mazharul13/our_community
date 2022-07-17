@@ -7,6 +7,7 @@ export 'screens/member_list.dart';
 export 'screens/member_list_pending.dart';
 export 'screens/my_profile_page.dart';
 export 'screens/home_screen.dart';
+export 'screens/issue_list.dart';
 export 'screens/profile_page.dart';
 export 'ui_elements/customUI.dart';
 export 'common_code.dart';

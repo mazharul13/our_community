@@ -129,7 +129,7 @@ class MemberList extends State<MemberListScreen> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text("Setting String"),
+                                          title: Text("Details..."),
                                           content: Text(
                                               "You have choosen to View details of "+
                                                   map1[index]["MEMBER_NAME"].toString() +" ("+
