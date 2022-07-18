@@ -18,6 +18,8 @@ class dbCOn {
     return MySqlConnection.connect(settings);
   }
 
+
+
   Future getMemberList(var sql) async {
 
     List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
@@ -46,7 +48,7 @@ class dbCOn {
     return map1;
   }
 
-  Future getIssues(var sql) async {
+  Future<List<Map>> getIssues(var sql) async {
 
     List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
     Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
@@ -71,6 +73,8 @@ class dbCOn {
     // log(map1.length.toString()+"3333");
     return map1;
   }
+
+
 
   Future getMemberListWithPhoto(var sql) async {
 

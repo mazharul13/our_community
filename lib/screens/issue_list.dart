@@ -227,6 +227,7 @@ class IssueList extends State<IssueListScreen> {
                             // inorder to display something on the Canvas
                             future: IssueListFuture(),
                           ))
+
               ],
             ),
           ),

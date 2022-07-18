@@ -96,12 +96,28 @@ class appBar {
                       MaterialPageRoute(
                           builder: (context) => CommunityEntryScreen()));
                   log("Add People menu");
-                }else if (value == 5) {
+                }
+                else if (value == 4) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => IssueEntryScreen()));
+                  log("New Issue");
+                }
+
+                else if (value == 5) {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => IssueListScreen()));
-                  log("Add People menu");
+                  log("List of Issue");
+                }
+                else if (value == 3) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentCollectionScreen()));
+                  log("Add payment");
                 }
                 else if (value == 6) {
                   Navigator.pushReplacement(context,
