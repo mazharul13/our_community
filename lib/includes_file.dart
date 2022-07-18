@@ -21,7 +21,12 @@ export 'dart:convert';
 export 'dart:io'; // for File
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+
+
+export 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+
 
 
 

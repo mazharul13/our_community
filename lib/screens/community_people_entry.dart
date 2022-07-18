@@ -340,7 +340,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addButtonEnable == true ||  addButtonEnable == false
+        onPressed: addButtonEnable == true
             ? () {
                 if (tecName.text == '' ||
                     tecFName.text == '' ||
