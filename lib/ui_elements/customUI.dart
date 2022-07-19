@@ -4,34 +4,40 @@ import 'package:flutter/material.dart';
 
 class customUI
 {
-  TextField customTextBoxCrt(var contr, var txtLabel, {int passField = 0})
+  SizedBox customTextBoxCrt(var contr, var txtLabel, {int passField = 0})
   {
 
     if(passField == 1) {
-      return TextField(
+      return SizedBox(
+          child: TextField(
         controller: contr,
 
         obscureText: true,
         enableSuggestions: false,
         autocorrect: false,
         decoration: InputDecoration(
+          // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
           label: Text(txtLabel.toString()),
           border: OutlineInputBorder(),
           hintText: 'Enter ' + txtLabel.toString(),
         ),
-      );
+      ));
     }
     else
       {
-        return TextField(
+        return SizedBox(
+        height: 40,
+            child: TextField(
           controller: contr,
 
           decoration: InputDecoration(
+            // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
             label: Text(txtLabel.toString()),
+            isDense: true,
             border: OutlineInputBorder(),
             hintText: 'Enter ' + txtLabel.toString(),
           ),
-        );
+        ));
 
       }
   }

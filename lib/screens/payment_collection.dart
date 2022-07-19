@@ -30,6 +30,11 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
   }
 
   bool addButtonEnable = true;
+  String _selectedDate = '';
+  String _dateCount = '';
+  String _range = '';
+  String _rangeCount = '';
+
   bool isLoading = false;
   bool dataLoaded = false;
   bool dataLoaded2 = false;
@@ -37,22 +42,23 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
   List<Map> map1_backup = [];
 
   Future<String> saveValues() async {
-      var Lib = new Library();
-      var db = new dbCOn();
+    var Lib = new Library();
+    var db = new dbCOn();
 
-      log(map1.length.toString());
-      log(selectedValue);
+    log(map1.length.toString());
+    log(selectedValue);
+    log(_selectedDate);
 
-      var totalTxtBox =map1.length;
-      for(var i=0;i<totalTxtBox;i++)
-        {
-          log(_controller[i].text);
-        }
+    var totalTxtBox =map1.length;
+    for(var i=0;i<totalTxtBox;i++)
+    {
+      log(_controller[i].text);
+    }
 
-      // if(selectedValue == 1) //For monthly Collection issues
-      //   {
-      //     String
-      // }
+    // if(selectedValue == 1) //For monthly Collection issues
+    //   {
+    //     String
+    // }
 
 //       //Check duplicate mobile number...
 //       String mobileCheckSQL = "SELECT * FROM issues "
@@ -124,8 +130,8 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 //     });
 
     setState(() {
-        addButtonEnable = true;
-        isLoading = false;
+      addButtonEnable = true;
+      isLoading = false;
     });
     return "Success...";
   }
@@ -168,10 +174,6 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 
 
 
-  String _selectedDate = '';
-  String _dateCount = '';
-  String _range = '';
-  String _rangeCount = '';
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     /// The argument value will return the changed date as [DateTime] when the
@@ -186,6 +188,11 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
     /// The argument value will return the changed ranges as
     /// [List<PickerDateRange] when the widget [SfDateRangeSelectionMode] set as
     /// multi range.
+    ///
+    ///
+    ///
+
+    log("3333333333");
     setState(() {
       if (args.value is PickerDateRange) {
         _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
@@ -211,244 +218,248 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 
     return Scaffold(
       // resizeToAvoidBottomInset: false,
-        appBar: appBar.crtAppBar("Add Payment...", context),
-        body: Container(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(
-            // Center is a layout widget. It takes a single child and positions it
-            // in the middle of the parent.
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 10),
+      appBar: appBar.crtAppBar("Add Payment...", context),
+      body: Form(
+          child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 10),
 
-                dataLoaded2 == true
-                    ? InputDecorator(
-                  decoration:
-                  const InputDecoration(border: OutlineInputBorder()),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      borderRadius: BorderRadius.circular(8),
+                      dataLoaded2 == true
+                          ? InputDecorator(
+                        decoration:
+                        const InputDecoration(border: OutlineInputBorder()),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            borderRadius: BorderRadius.circular(8),
 
-                      underline: Container(),
-                      //empty line
-                      style: TextStyle(fontSize: 15, color: Colors.black),
-                      dropdownColor: Colors.cyan,
-                      iconEnabledColor: Colors.red,
-                      //Icon color
+                            underline: Container(),
+                            //empty line
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                            dropdownColor: Colors.cyan,
+                            iconEnabledColor: Colors.red,
+                            //Icon color
 
-                      isExpanded: true,
-                      // isDense: true,
-                      value: selectedValue,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedValue = value.toString();
-                        });
-                        // print(value);
-                      },
-                      itemHeight: null,
-                      items: issueLists1.map((Map m) {
-                        // log(m['ISSUE_ID'].toString());
-                        return DropdownMenuItem<String>(
-                          value: m['ISSUE_ID'].toString(),
-                          child: Text(m['ISSUE_TITLE'].toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                )
-                    : FutureBuilder(
-                  builder:
-                      (BuildContext context, AsyncSnapshot snapshot) {
-                    // Checking if future is resolved or not
-                    if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      // If we got an error
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: TextStyle(fontSize: 10),
+                            isExpanded: true,
+                            // isDense: true,
+                            value: selectedValue,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedValue = value.toString();
+                              });
+                              // print(value);
+                            },
+                            // itemHeight: null,
+                            items: issueLists1.map((Map m) {
+                              // log(m['ISSUE_ID'].toString());
+                              return DropdownMenuItem<String>(
+                                  value: m['ISSUE_ID'].toString(),
+
+                                  child: Text(m['ISSUE_TITLE'].toString() +
+                                      " ("+m['ISSUE_DATES']+")")
+                              );
+                            }).toList(),
                           ),
-                        );
-
-                        // if we got our data
-                      } else if (snapshot.hasData) {
-                        // log(snapshot.data[0]);
-                        return Text("Data Loaded...");
-                      }
-                    }
-
-                    // Displaying LoadingSpinner to indicate waiting state
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-
-                  // Future that needs to be resolved
-                  // inorder to display something on the Canvas
-                  future: dropBtnIssues(),
-                ),
-
-                // await dropBtnIssues(),
-                SizedBox(height: 10),
-
-                SfDateRangePicker(
-                  view: DateRangePickerView.year,
-                  selectionMode: DateRangePickerSelectionMode.range,
-                  allowViewNavigation: false,
-                ),
-
-
-                SizedBox(height: 10),
-                // new SingleChildScrollView(
-                //   scrollDirection: Axis.vertical,
-                //   child:
-                Expanded(
-                  // padding: EdgeInsets.all(1), //You can use EdgeInsets like above
-                  // margin: EdgeInsets.all(2),
-                    child: map1.length != 0
-                        ? ListView.builder(
-                      // physics: NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: map1.length,
-                      itemBuilder: (context, int index) {
-                        _controller.add(
-                            TextEditingController());
-                        // log(data[index]["PHOTO_FILE"].toString());
-                        // log("dddddddddd");
-
-                        return InkWell(
-                            child: Card(
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  //<-- SEE HERE
-                                  borderRadius: BorderRadius.circular(5),
-                                  side: BorderSide(
-                                    color: Colors.greenAccent,
-                                  ),
+                        ),
+                      )
+                          : FutureBuilder(
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          // Checking if future is resolved or not
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            // If we got an error
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  '${snapshot.error} occurred',
+                                  style: TextStyle(fontSize: 10),
                                 ),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                              map1[index]["MEMBER_NAME"] +
-                                                  "(" +
-                                                  map1[index]
-                                                  ["CONTACT_NO"] +
-                                                  ")",
-                                              textAlign: TextAlign.left),
-                                          Text(
-                                              "Blood Group: " +
-                                                  map1[index]
-                                                  ["BLOOD_GROUP"]
-                                                      .toString(),
-                                              textAlign: TextAlign.left),
-                                          Text(
-                                              "Address : " +
-                                                  map1[index]["ADDRESS"],
-                                              textAlign: TextAlign.left),
-                                          SizedBox(height:10),
-                                          customTxtB.customTextBoxCrt(
-                                              _controller[index],
-                                              "Enter Amount"),
-                                        ]))));
-                      },
-                    )
-                        : FutureBuilder(
-                      builder:
-                          (BuildContext context, AsyncSnapshot snapshot) {
-                        // Checking if future is resolved or not
-                        if (snapshot.connectionState ==
-                            ConnectionState.done) {
-                          // If we got an error
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text(
-                                '${snapshot.error} occurred',
-                                style: TextStyle(fontSize: 10),
-                              ),
-                            );
+                              );
 
-                            // if we got our data
-                          } else if (snapshot.hasData) {
-                            // log(snapshot.data[0]);
-                            // Extracting data from snapshot object
-                            final data = snapshot.data;
-                            // print(data[0]["MEMBER_NAME"]);
-
-                            return Text("Data Loaded...");
+                              // if we got our data
+                            } else if (snapshot.hasData) {
+                              // log(snapshot.data[0]);
+                              return Text("Data Loaded...");
+                            }
                           }
-                        }
 
-                        // Displaying LoadingSpinner to indicate waiting state
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
+                          // Displaying LoadingSpinner to indicate waiting state
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
 
-                      // Future that needs to be resolved
-                      // inorder to display something on the Canvas
-                      future: MemberListFuture(),
-                    )),
+                        // Future that needs to be resolved
+                        // inorder to display something on the Canvas
+                        future: dropBtnIssues(),
+                      ),
 
-
-                isLoading
-                    ? Center(
-                  child: CircularProgressIndicator(),
-                )
-                    : SizedBox(height: 5),
-
-              ],
+                      // await dropBtnIssues(),
+                      SizedBox(height: 10),
 
 
-            ),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-    onPressed: addButtonEnable == true
-        ? ()
-    {
-      if(selectedValue == '')
-      {
-        Lib.createSnackBar("Select any issue...", context);
-        return;
-      }
-      else {
-        var collectionProceed = 0;
-        for (var i = 0; i <= map1.length; i++) {
-          if (_controller[i].text != '' && int.parse(_controller[i].text.toString()) > 0) {
-            collectionProceed = 1;
-            break;
-          }
-        }
+                      SfDateRangePicker(
+                        view: DateRangePickerView.month,
+                        onSelectionChanged: _onSelectionChanged,
+                        selectionMode: DateRangePickerSelectionMode.single,
+                        allowViewNavigation: true,
+                      ),
+                      SizedBox(height: 10),
 
-        if (collectionProceed == 1) {
-          setState(() {
-            isLoading = true;
-            // loadData = 1;
-            addButtonEnable = false;
-          });
-          saveValues();
-        }
+                      map1.length != 0
+                          ? ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: map1.length,
+                        itemBuilder: (context, int index) {
+                          _controller.add(
+                              TextEditingController());
+                          // log(data[index]["PHOTO_FILE"].toString());
+                          // log("dddddddddd");
 
-        else
+                          return InkWell(
+                              child: Card(
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    //<-- SEE HERE
+                                    borderRadius: BorderRadius.circular(5),
+                                    side: BorderSide(
+                                      color: Colors.greenAccent,
+                                    ),
+                                  ),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                                map1[index]["MEMBER_NAME"] +
+                                                    "(" +
+                                                    map1[index]
+                                                    ["CONTACT_NO"] +
+                                                    ")",
+                                                textAlign: TextAlign.left),
+                                            Text(
+                                                "Blood Group: " +
+                                                    map1[index]
+                                                    ["BLOOD_GROUP"]
+                                                        .toString(),
+                                                textAlign: TextAlign.left),
+                                            Text(
+                                                "Address : " +
+                                                    map1[index]["ADDRESS"],
+                                                textAlign: TextAlign.left),
+                                            SizedBox(height:10),
+                                            customTxtB.customTextBoxCrt(
+                                                _controller[index],
+                                                "Enter Amount"),
+                                          ]))));
+                        },
+                      )
+                          : FutureBuilder(
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          // Checking if future is resolved or not
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            // If we got an error
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  '${snapshot.error} occurred',
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                              );
+
+                              // if we got our data
+                            } else if (snapshot.hasData) {
+                              // log(snapshot.data[0]);
+                              // Extracting data from snapshot object
+                              final data = snapshot.data;
+                              // print(data[0]["MEMBER_NAME"]);
+
+                              return Text("Data Loaded...");
+                            }
+                          }
+
+                          // Displaying LoadingSpinner to indicate waiting state
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+
+                        // Future that needs to be resolved
+                        // inorder to display something on the Canvas
+                        future: MemberListFuture(),
+                      )
+
+                      ,
+
+
+                      isLoading
+                          ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                          : SizedBox(height: 5),
+
+
+
+
+
+
+                    ],
+
+
+                  ),
+                ),
+              ))),
+      floatingActionButton: FloatingActionButton(
+        onPressed: addButtonEnable == true
+            ? ()
+        {
+          if(selectedValue == '')
           {
-            Lib.createSnackBar("Select any issue and enter right amount for at least one people...", context);
+            Lib.createSnackBar("Select any issue...", context);
             return;
           }
-      }
+          else {
+            var collectionProceed = 0;
+            for (var i = 0; i <= map1.length; i++) {
+              if (_controller[i].text != '' && int.parse(_controller[i].text.toString()) > 0) {
+                collectionProceed = 1;
+                break;
+              }
+            }
 
-    }: null,
+            if (collectionProceed == 1) {
+              setState(() {
+                isLoading = true;
+                // loadData = 1;
+                addButtonEnable = false;
+              });
+              saveValues();
+            }
+
+            else
+            {
+              Lib.createSnackBar("Select any issue and enter right amount for at least one people...", context);
+              return;
+            }
+          }
+
+        }: null,
 //          Lib.createSnackBar("Login Success.. Please try again"+result.toString(), context);
-    tooltip: 'Add Payment',
-    child: Text("Add"),
-    // const Icon(Icons.ten_k_outlined),
-    ), // This trailing comma makes auto-formatting nicer for build methods.
+        tooltip: 'Add Payment',
+        child: Text("Add"),
+        // const Icon(Icons.ten_k_outlined),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
