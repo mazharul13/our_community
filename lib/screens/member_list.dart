@@ -15,7 +15,10 @@ class MemberList extends State<MemberListScreen> {
   Future<List<Map>> MemberListFuture() async {
     var db = new dbCOn();
     String sql =
-        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP from community_member WHERE STATUS = 1";
+        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP, "
+        "DATE_FORMAT(SUBSTRING(MEMBER_SINCE, 1, 10), '%d-%M-%Y') "
+        "MEMBER_SINCE from community_member WHERE STATUS = 1";
+    log(sql);
     var res = await db.getMemberList(sql);
     map1_backup = res;
     setState(() {
@@ -197,6 +200,10 @@ class MemberList extends State<MemberListScreen> {
                                                 Text(
                                                     "Address : " +
                                                         map1[index]["ADDRESS"],
+                                                    textAlign: TextAlign.left),
+                                                Text(
+                                                    "Member From : " +
+                                                        map1[index]["MEMBER_SINCE"].toString(),
                                                     textAlign: TextAlign.left),
 
                                                 // subtitle: Text(snapshot.data[index]),

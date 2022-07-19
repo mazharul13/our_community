@@ -4,6 +4,25 @@ import 'package:flutter/material.dart';
 
 class customUI
 {
+
+  SizedBox customTextBoxCrt2(var contr, var txtLabel)
+  {
+      return SizedBox(
+          child: TextField(
+            controller: contr,
+
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: InputDecoration(
+              // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
+              label: Text(txtLabel.toString()),
+              border: OutlineInputBorder(),
+              hintText: 'Enter ' + txtLabel.toString(),
+            ),
+          ));
+
+  }
+
   SizedBox customTextBoxCrt(var contr, var txtLabel, {int passField = 0})
   {
 
@@ -29,7 +48,6 @@ class customUI
         height: 40,
             child: TextField(
           controller: contr,
-
           decoration: InputDecoration(
             // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
             label: Text(txtLabel.toString()),

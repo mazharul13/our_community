@@ -28,13 +28,13 @@ class dbCOn {
       await getConnection().then((conn) async {
         log("conn...=="+sql);
         await conn.query(sql).then((result) {
-          // print({'type':result});
+           // print({'type':result});
           // print(json.decode(result));
 
           for (var r in result) {
             m = {"MEMBER_NAME": r["MEMBER_NAME"], "CONTACT_NO": r["CONTACT_NO"],
               "ADDRESS": r["ADDRESS"], "BLOOD_GROUP": r["BLOOD_GROUP"],
-              "MEMBER_FNAME": r["MEMBER_FNAME"]
+              "MEMBER_FNAME": r["MEMBER_FNAME"], "MEMBER_SINCE": r["MEMBER_SINCE"]
             };
             map1.add(m);
           }

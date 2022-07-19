@@ -5,6 +5,8 @@ import 'package:calculator/includes_file.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:mysql1/mysql1.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CommunityEntryScreen extends StatefulWidget {
   @override
@@ -74,7 +76,7 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       }else {
         String sql1 = "INSERT INTO `community_member` "
             "(`MEMBER_NAME`, `MEMBER_FNAME`, `CONTACT_NO`, `PHOTO_FILE`, "
-            "`BLOOD_GROUP`, `ADDRESS`, `CREATED_AT`)"
+            "`BLOOD_GROUP`, `ADDRESS`, MEMBER_SINCE, `CREATED_AT`)"
             "VALUES('" +
             tecName.text +
             "',"
@@ -92,8 +94,10 @@ class CommunityEntry extends State<CommunityEntryScreen> {
             "',"
                 "'" +
             tecAddress.text +
-            "',"
-                "now())";
+            "','" +
+            _selectedDate
+            +
+                "' now())";
 
         // log(sql1);
 
@@ -138,6 +142,30 @@ class CommunityEntry extends State<CommunityEntryScreen> {
       return dataSavingMsg;
     });
   }
+
+
+  String _selectedDate = '';
+  String _dateCount = '';
+  String _range = '';
+  String _rangeCount = '';
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    setState(() {
+      if (args.value is PickerDateRange) {
+        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+        // ignore: lines_longer_than_80_chars
+            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+      } else if (args.value is DateTime) {
+        _selectedDate = args.value.toString().substring(0, 10);
+        log(_selectedDate);
+      } else if (args.value is List<DateTime>) {
+        _dateCount = args.value.length.toString();
+      } else {
+        _rangeCount = args.value.length.toString();
+      }
+    });
+  }
+
 
   @override
   void setValue(var i) {
@@ -326,6 +354,14 @@ class CommunityEntry extends State<CommunityEntryScreen> {
               dropBtnKeyVal("BloodGroup"),
               SizedBox(height: 10),
               customTxtB.customTextBoxCrt(tecAddress, "Address"),
+              SizedBox(height: 10),
+
+              SfDateRangePicker(
+                onSelectionChanged: _onSelectionChanged,
+                selectionMode: DateRangePickerSelectionMode.single,
+                showTodayButton: true,
+              ),
+
               SizedBox(height: 10),
 
               isLoading

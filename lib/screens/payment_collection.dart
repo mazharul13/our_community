@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:calculator/includes_file.dart';
 import 'package:intl/intl.dart';
@@ -50,9 +51,18 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
     log(_selectedDate);
 
     var totalTxtBox =map1.length;
+    var sql = "INSERT INTO payment_collection (MEMBER_ID, ISSUE_ID, AMOUNT, PAY_DATE)";
+
     for(var i=0;i<totalTxtBox;i++)
     {
-      log(_controller[i].text);
+
+      var amount = _controller[i].text;
+      if(selectedValue == 1) //Monthly Collection
+        {
+
+
+        }
+      // var
     }
 
     // if(selectedValue == 1) //For monthly Collection issues
@@ -157,8 +167,15 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 
   Future<List<Map>> MemberListFuture() async {
     var db = new dbCOn();
+    // String sql =
+    //     "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP "
+    //     "from community_member WHERE STATUS = 0";
+
     String sql =
-        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP from community_member WHERE STATUS = 0";
+        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP, MEMBER_SINCE MEMBER_SINCE2, "
+        "DATE_FORMAT(SUBSTRING(MEMBER_SINCE, 1, 10), '%d-%M-%Y') "
+        "MEMBER_SINCE from community_member WHERE STATUS = 1 ORDER BY ID";
+
     var res = await db.getMemberList(sql);
     map1_backup = res;
     setState(() {
@@ -171,6 +188,10 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 
   final amountTxtContr = TextEditingController();
   List<TextEditingController> _controller = [];
+  List<TextEditingController> _controller_mob = [];
+  List<TextEditingController> _controller_member_since = [];
+  List<TextEditingController> _controller_payment_clear = [];
+
 
 
 
@@ -192,7 +213,6 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
     ///
     ///
 
-    log("3333333333");
     setState(() {
       if (args.value is PickerDateRange) {
         _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
@@ -219,9 +239,8 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       appBar: appBar.crtAppBar("Add Payment...", context),
-      body: Form(
-          child: SingleChildScrollView(
-              child: Container(
+      body:
+              Container(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Column(
@@ -256,11 +275,15 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                             // itemHeight: null,
                             items: issueLists1.map((Map m) {
                               // log(m['ISSUE_ID'].toString());
+                              String str = m['ISSUE_TITLE'].toString();
+                              if (m['ISSUE_DATES'] != '')
+                                {
+                                  str += " ("+m['ISSUE_DATES']+")";
+                                }
                               return DropdownMenuItem<String>(
                                   value: m['ISSUE_ID'].toString(),
 
-                                  child: Text(m['ISSUE_TITLE'].toString() +
-                                      " ("+m['ISSUE_DATES']+")")
+                                  child: Text(str)
                               );
                             }).toList(),
                           ),
@@ -303,6 +326,14 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                       SizedBox(height: 10),
 
 
+
+                  Expanded(
+                  child: SingleChildScrollView(
+    child: Column(
+      children: [
+
+
+
                       SfDateRangePicker(
                         view: DateRangePickerView.month,
                         onSelectionChanged: _onSelectionChanged,
@@ -312,7 +343,8 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                       SizedBox(height: 10),
 
                       map1.length != 0
-                          ? ListView.builder(
+                          ?
+                      ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
@@ -320,6 +352,14 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                         itemBuilder: (context, int index) {
                           _controller.add(
                               TextEditingController());
+                          _controller_mob.add(
+                              TextEditingController(text:map1[index]["CONTACT_NO"].toString()));
+                          _controller_member_since.add(
+                              TextEditingController(text:map1[index]["MEMBER_SINCE2"].toString()));
+                          _controller_payment_clear.add(
+                              TextEditingController(text:map1[index]["CONTACT_NO"].toString()));
+
+
                           // log(data[index]["PHOTO_FILE"].toString());
                           // log("dddddddddd");
 
@@ -357,6 +397,18 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                                                     map1[index]["ADDRESS"],
                                                 textAlign: TextAlign.left),
                                             SizedBox(height:10),
+
+                                      Visibility(
+                                          visible: true,
+                                        child: Column(
+                                          children: [
+                                            customTxtB.customTextBoxCrt2(_controller_mob[index], "Mobile"),
+
+                                          ],
+                                        )
+                                      ),
+
+
                                             customTxtB.customTextBoxCrt(
                                                 _controller[index],
                                                 "Enter Amount"),
@@ -408,19 +460,14 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                         child: CircularProgressIndicator(),
                       )
                           : SizedBox(height: 5),
-
-
-
-
-
-
                     ],
-
-
                   ),
                 ),
-              ))),
-      floatingActionButton: FloatingActionButton(
+              ),
+               ]
+                  )
+              ) ),
+                  floatingActionButton: FloatingActionButton(
         onPressed: addButtonEnable == true
             ? ()
         {
@@ -432,7 +479,8 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
           else {
             var collectionProceed = 0;
             for (var i = 0; i <= map1.length; i++) {
-              if (_controller[i].text != '' && int.parse(_controller[i].text.toString()) > 0) {
+              if (_controller[i].text != '' && int.parse(_controller[i].text.toString()) > 0)
+              {
                 collectionProceed = 1;
                 break;
               }
