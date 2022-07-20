@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/services.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:calculator/includes_file.dart';
@@ -42,28 +41,49 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
   List<Map> map1 = [];
   List<Map> map1_backup = [];
 
+
+
   Future<String> saveValues() async {
     var Lib = new Library();
     var db = new dbCOn();
 
     log(map1.length.toString());
     log(selectedValue);
-    log(_selectedDate);
+    log(dateinput.text);
 
     var totalTxtBox =map1.length;
     var sql = "INSERT INTO payment_collection (MEMBER_ID, ISSUE_ID, AMOUNT, PAY_DATE)";
 
+    setState(() {
+      addButtonEnable = true;
+    });
+
     for(var i=0;i<totalTxtBox;i++)
     {
+      log(i.toString());
 
       var amount = _controller[i].text;
-      if(selectedValue == 1) //Monthly Collection
-        {
+      var member_since = _controller_member_since[i].text;
+      log("Member Since" + member_since);
+      var mobile_number = _controller_mob[i].text;
+      var monthly_pmt_clear_upto = _controller_payment_clear[i].text;
+      log("monthly_pmt_clear_upto " + monthly_pmt_clear_upto);
 
+      if(int.parse(selectedValue) == 1) //Monthly Collection issues
+      {
+        // log(i.toString());
+        var starting_from = member_since;
+        // _contact?.email ?? ""
+        if (monthly_pmt_clear_upto ?? "" && monthly_pmt_clear_upto.compareTo(member_since) > 0)
+          starting_from = monthly_pmt_clear_upto;
 
-        }
+        log("Starting" + starting_from);
+
+      }
       // var
     }
+
+
 
     // if(selectedValue == 1) //For monthly Collection issues
     //   {
@@ -172,11 +192,26 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
     //     "from community_member WHERE STATUS = 0";
 
     String sql =
-        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP, MEMBER_SINCE MEMBER_SINCE2, "
-        "DATE_FORMAT(SUBSTRING(MEMBER_SINCE, 1, 10), '%d-%M-%Y') "
-        "MEMBER_SINCE from community_member WHERE STATUS = 1 ORDER BY ID";
+        "select MEMBER_NAME, ADDRESS, CONTACT_NO, BLOOD_GROUP, "
+        "DATE_FORMAT(SUBSTRING(MEMBER_SINCE, 1, 10), '%d-%M-%Y') MEMBER_SINCE_FORMATTED, "
+        " MEMBER_SINCE, "
+        "pc1.ENTRY_DT1, pc1.PAY_DATE1, DATE_FORMAT(SUBSTRING(pc1.PAY_DATE1, 1, 10), '%d-%M-%Y') PAY_DATE1_FORMATTED, pc2.PAY_DATE2, issues.ISSUE_ID, issues.ISSUE_TITLE,"
+        "DATE_FORMAT(SUBSTRING(issues.ISSUE_DATE, 1, 10), '%d-%M-%Y') ISSUE_DATES, pc2.AMOUNT  "
+            "from community_member cm LEFT JOIN  "
+        "(SELECT MEMBER_ID, ISSUE_ID, MAX(PAY_DATE) PAY_DATE1, DATE_FORMAT(SUBSTRING(ENTRY_DT, 1, 10), '%d-%M-%Y') ENTRY_DT1 "
+        "FROM payment_collection WHERE ISSUE_ID = 1 GROUP BY MEMBER_ID, ISSUE_ID, ENTRY_DT1)  pc1  ON cm.ID = pc1.MEMBER_ID "
+            "LEFT JOIN "
+            "(SELECT pc3.MEMBER_ID, pc3.ISSUE_ID, pc3.AMOUNT, PAY_DATE2 FROM "
+        "(SELECT MEMBER_ID, DATE_FORMAT(SUBSTRING(MAX(PAY_DATE), 1, 10), '%d-%M-%Y') PAY_DATE2 "
+        "FROM payment_collection WHERE ISSUE_ID != 1  GROUP BY MEMBER_ID) colc "
+        "LEFT JOIN payment_collection pc3 ON colc.MEMBER_ID = pc3.MEMBER_ID and "
+        "colc.PAY_DATE2 = DATE_FORMAT(SUBSTRING(pc3.PAY_DATE, 1, 10), '%d-%M-%Y')  and ISSUE_ID != 1 "
+        ")  pc2 "
+        "ON cm.ID = pc2.MEMBER_ID "
+        "LEFT JOIN issues on pc2.ISSUE_ID = issues.ISSUE_ID";
 
-    var res = await db.getMemberList(sql);
+    log(sql);
+    var res = await db.getMemberList_withDetails(sql);
     map1_backup = res;
     setState(() {
       dataLoaded = true;
@@ -196,36 +231,14 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
 
 
 
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    /// The argument value will return the changed date as [DateTime] when the
-    /// widget [SfDateRangeSelectionMode] set as single.
-    ///
-    /// The argument value will return the changed dates as [List<DateTime>]
-    /// when the widget [SfDateRangeSelectionMode] set as multiple.
-    ///
-    /// The argument value will return the changed range as [PickerDateRange]
-    /// when the widget [SfDateRangeSelectionMode] set as range.
-    ///
-    /// The argument value will return the changed ranges as
-    /// [List<PickerDateRange] when the widget [SfDateRangeSelectionMode] set as
-    /// multi range.
-    ///
-    ///
-    ///
 
+
+  TextEditingController dateinput = TextEditingController();
+
+  setNewDate(String dt)
+  {
     setState(() {
-      if (args.value is PickerDateRange) {
-        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
-        // ignore: lines_longer_than_80_chars
-            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
-      } else if (args.value is DateTime) {
-        _selectedDate = args.value.toString().substring(0, 10);
-        log(_selectedDate);
-      } else if (args.value is List<DateTime>) {
-        _dateCount = args.value.length.toString();
-      } else {
-        _rangeCount = args.value.length.toString();
-      }
+      dateinput.text = dt;
     });
   }
 
@@ -325,22 +338,13 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                       // await dropBtnIssues(),
                       SizedBox(height: 10),
 
+                      customTxtB.customTextDatePicker(dateinput, context, setNewDate),
 
 
                   Expanded(
                   child: SingleChildScrollView(
     child: Column(
       children: [
-
-
-
-                      SfDateRangePicker(
-                        view: DateRangePickerView.month,
-                        onSelectionChanged: _onSelectionChanged,
-                        selectionMode: DateRangePickerSelectionMode.single,
-                        allowViewNavigation: true,
-                      ),
-                      SizedBox(height: 10),
 
                       map1.length != 0
                           ?
@@ -355,9 +359,9 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                           _controller_mob.add(
                               TextEditingController(text:map1[index]["CONTACT_NO"].toString()));
                           _controller_member_since.add(
-                              TextEditingController(text:map1[index]["MEMBER_SINCE2"].toString()));
+                              TextEditingController(text:map1[index]["MEMBER_SINCE"].toString()));
                           _controller_payment_clear.add(
-                              TextEditingController(text:map1[index]["CONTACT_NO"].toString()));
+                              TextEditingController(text:map1[index]["PAY_DATE1"].toString()));
 
 
                           // log(data[index]["PHOTO_FILE"].toString());
@@ -384,25 +388,34 @@ class PaymentCollection extends State<PaymentCollectionScreen> {
                                                     "(" +
                                                     map1[index]
                                                     ["CONTACT_NO"] +
-                                                    ")",
-                                                textAlign: TextAlign.left),
+                                                    "), \nMember Since:" + map1[index]["MEMBER_SINCE_FORMATTED"].toString(),
+                                                textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+
+                                            SizedBox(height:10),
+
                                             Text(
-                                                "Blood Group: " +
-                                                    map1[index]
-                                                    ["BLOOD_GROUP"]
-                                                        .toString(),
+                                                "Monthly Pmt: Clear Upto (" +
+                                                    map1[index]["PAY_DATE1_FORMATTED"].toString() + "), \nLast pmt at (" + map1[index]["ENTRY_DT1"].toString() + ")",
                                                 textAlign: TextAlign.left),
+                                            SizedBox(height:10),
+
                                             Text(
-                                                "Address : " +
-                                                    map1[index]["ADDRESS"],
+                                                "Last Pmt Special Issue : "+ map1[index]["ISSUE_TITLE"].toString() + "("+map1[index]["ISSUE_DATES"].toString()+") \n"+
+                                                    "Paid "+map1[index]["AMOUNT"].toString()+" tk. at - " + map1[index]["PAY_DATE2"].toString(),
                                                 textAlign: TextAlign.left),
                                             SizedBox(height:10),
 
                                       Visibility(
-                                          visible: true,
+                                          visible: false,
                                         child: Column(
                                           children: [
                                             customTxtB.customTextBoxCrt2(_controller_mob[index], "Mobile"),
+                                            customTxtB.customTextBoxCrt2(_controller_member_since[index], "Member Since"),
+                                            customTxtB.customTextBoxCrt2(_controller_payment_clear[index], "Payment Clear to"),
 
                                           ],
                                         )

@@ -48,6 +48,39 @@ class dbCOn {
     return map1;
   }
 
+  Future getMemberList_withDetails(var sql) async {
+
+    List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
+    Map m = {}; //{'zero': 0, 'one': 1, 'two': 2};
+    try{
+      await getConnection().then((conn) async {
+        log("conn...=="+sql);
+        await conn.query(sql).then((result) {
+          // print({'type':result});
+          // print(json.decode(result));
+
+          for (var r in result) {
+            m = {"MEMBER_NAME": r["MEMBER_NAME"], "CONTACT_NO": r["CONTACT_NO"],
+              "ADDRESS": r["ADDRESS"], "BLOOD_GROUP": r["BLOOD_GROUP"],
+              "MEMBER_FNAME": r["MEMBER_FNAME"], "MEMBER_SINCE": r["MEMBER_SINCE"],
+              "ENTRY_DT1": r["ENTRY_DT1"], "PAY_DATE1": r["PAY_DATE1"],
+              "MEMBER_SINCE_FORMATTED": r["MEMBER_SINCE_FORMATTED"], "PAY_DATE1_FORMATTED": r["PAY_DATE1_FORMATTED"],
+              "PAY_DATE2": r["PAY_DATE2"], "ISSUE_TITLE": r["ISSUE_TITLE"],
+              "ISSUE_DATES": r["ISSUE_DATES"], "AMOUNT": r["AMOUNT"],
+            };
+            map1.add(m);
+          }
+        });
+      });
+    }
+    catch(err){
+      print(err.runtimeType);
+    }
+    // log(map1.length.toString()+"3333");
+    return map1;
+  }
+
+
   Future<List<Map>> getIssues(var sql) async {
 
     List<Map> map1 = []; // = {'zero': 0, 'one': 1, 'two': 2};
