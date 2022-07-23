@@ -58,6 +58,7 @@ class appBar {
                     _buildPopupMenuItem(
                         "List of Member (Pending)", Icons.search, 22),
                     _buildPopupMenuItem("Add Payment", Icons.search, 3),
+                    _buildPopupMenuItem("Payment giving", Icons.search, 31),
                     _buildPopupMenuItem("New Issue", Icons.search, 4),
                     _buildPopupMenuItem("List of Issue", Icons.search, 5),
                     _buildPopupMenuItem("Logout", Icons.search, -6),
@@ -117,6 +118,13 @@ class appBar {
                       context,
                       MaterialPageRoute(
                           builder: (context) => PaymentCollectionScreen()));
+                  log("Add payment");
+                }
+                else if (value == 31) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentGivingScreen()));
                   log("Add payment");
                 }
                 else if (value == 6) {

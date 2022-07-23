@@ -10,6 +10,7 @@ export 'screens/new_issue.dart';
 export 'screens/home_screen.dart';
 export 'screens/issue_list.dart';
 export 'screens/payment_collection.dart';
+export 'screens/payment_giving.dart';
 export 'screens/profile_page.dart';
 export 'ui_elements/customUI.dart';
 export 'common_code.dart';

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class customUI
@@ -21,6 +22,27 @@ class customUI
               hintText: 'Enter ' + txtLabel.toString(),
             ),
           ));
+
+  }
+
+
+  SizedBox customTextBoxCrtNumber(var contr, var txtLabel)
+  {
+    return SizedBox(
+        height: 40,
+        child: TextField(
+          controller: contr,
+          keyboardType: TextInputType.number,
+          inputFormatters:[FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*'))],
+          enableSuggestions: false,
+          autocorrect: false,
+          decoration: InputDecoration(
+            // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
+            label: Text(txtLabel.toString()),
+            border: OutlineInputBorder(),
+            hintText: 'Enter ' + txtLabel.toString(),
+          ),
+        ));
 
   }
 
@@ -49,6 +71,7 @@ class customUI
         height: 40,
             child: TextField(
           controller: contr,
+
           decoration: InputDecoration(
             // contentPadding: EdgeInsets.symmetric(vertical: 20.0),
             label: Text(txtLabel.toString()),

@@ -11,6 +11,7 @@ class HomePageScreen extends StatefulWidget {
 class HomeScreenReal extends State<HomePageScreen> {
   late SharedPreferences prefs;
   String UserName = "";
+  String MobileNumber = "";
 
   @override
   void initState() {
@@ -23,6 +24,8 @@ class HomeScreenReal extends State<HomePageScreen> {
     setState(() {
       if (prefs.containsKey("UserName")) {
         UserName = prefs.getString("UserName").toString();
+        MobileNumber = prefs.getString("ContactNo").toString();
+        userLoggedIn = 1;
       }
     });
 
@@ -89,7 +92,7 @@ class HomeScreenReal extends State<HomePageScreen> {
                               Image.asset('assets/images/community_logo.jpg'),
                               UserName.toString() != ""
                                   ? Text(
-                                "Welcome : \n" + UserName,
+                                "Welcome : \n" + UserName + "("+MobileNumber+")",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 20),
                               )

@@ -12,17 +12,78 @@ class IssueList extends State<IssueListScreen> {
   List<Map> map1 = [];
   List<Map> map1_backup = [];
 
+  late SharedPreferences prefs;
+  String UserName = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadLoginValues();
+  }
+
+  void loadLoginValues() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.containsKey("UserName")) {
+        UserName = prefs.getString("UserName").toString();
+      }
+    });
+  }
+
+  bool isLoading = false;
+
   Future<List<Map>> IssueListFuture() async {
     var db = new dbCOn();
     String sql =
-        "SELECT DATE_FORMAT(ISSUE_DATE, '%d-%M-%Y') ISSUE_DATES, ISSUE_ID, ISSUE_TITLE FROM issues";
+        "SELECT ISSUE_ID, DATE_FORMAT(ISSUE_DATE, '%d-%M-%Y') ISSUE_DATES, ISSUE_ID, ISSUE_TITLE, if(STATUS=0, 'Closed', 'Active') STATUS FROM issues";
     var res = await db.getIssues(sql);
+    res.removeAt(0);
     map1_backup = res;
     setState(() {
       map1 = res;
     });
 
     return res;
+  }
+
+  Future<String> IssueClosing(String issueID) async {
+    var Lib = new Library();
+    setState(() {
+      isLoading = true;
+    });
+    var db = new dbCOn();
+    String sql =
+        "UPDATE issues SET STATUS = 0 where ISSUE_ID = '"+issueID+"'";
+    var res = await db.runInsertUpdateSQL(sql);
+    print(res);
+
+    if(res == 1) {
+      List<Map> map2 = [];
+      map1.forEach((m) {
+        if (!m["ISSUE_ID"].toString().contains(issueID))
+          map2.add(m);
+      });
+
+      map1_backup = map2;
+      setState(() {
+        map1 = map2;
+        isLoading = false;
+      });
+      Lib.createSnackBar(
+          "Status has been updated for the issue " , context);
+    }
+    else
+    {
+      setState(() {
+        // map1 = map2;
+        isLoading = false;
+      });
+      Lib.createSnackBar(
+          "Problem is there while updating status. Please try again later...", context);
+
+    }
+    return "Updated Status";
+
   }
 
   final SearchResultxt = TextEditingController();
@@ -122,48 +183,6 @@ class IssueList extends State<IssueListScreen> {
 
                               return InkWell(
                                   // child: Card(......),
-                                  onTap: () {
-                                    // int returnValueCOnfirmation = 0;
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text("Setting String"),
-                                          content: Text(
-                                              "You have choosen to View details of "+
-                                                  map1[index]["MEMBER_NAME"].toString() +" ("+
-                                                  map1[index]["CONTACT_NO"].toString()+"). This may take some time to wait..."
-                                              // controller: _controller,
-                                              ),
-                                          actions: <Widget>[
-                                            Icon(
-                                              Icons.info_outlined,
-                                            ),
-                                            FlatButton(
-                                              child: Text("Cancel"),
-                                              onPressed: () {
-                                                Navigator.pop(context, "");
-                                              },
-                                            ),
-                                            FlatButton(
-                                              child: Text("Continue"),
-                                              onPressed: () {
-                                                Navigator.pop(context, "");
-                                                Navigator.pushReplacement(context,
-                                                    MaterialPageRoute(builder:
-                                                        (context) => ProfilePageScreen(map1[index]["CONTACT_NO"].toString())
-                                                    )
-                                                );
-                                              },
-                                            )
-                                          ],
-                                        );
-                                      },
-                                    );
-
-
-                                    // print("Click event on Container" + map1[index]["CONTACT_NO"]);
-                                  },
                                   child: Card(
                                       color: Colors.white,
                                       shape: RoundedRectangleBorder(
@@ -179,8 +198,7 @@ class IssueList extends State<IssueListScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
-                                                Text(
-                                                    map1[index]["ISSUE_TITLE"],
+                                                Text(map1[index]["ISSUE_TITLE"],
                                                     textAlign: TextAlign.left),
                                                 Text(
                                                     "Date: " +
@@ -188,6 +206,97 @@ class IssueList extends State<IssueListScreen> {
                                                                 ["ISSUE_DATES"]
                                                             .toString(),
                                                     textAlign: TextAlign.left),
+                                                Text(
+                                                    "Status: " +
+                                                        map1[index]["STATUS"]
+                                                            .toString(),
+                                                    textAlign: TextAlign.left),
+                                                UserName != "" && map1[index]["STATUS"].toString() == 'Active' && map1[index]["ISSUE_ID"] != 1
+                                                    ? FlatButton(
+                                                        // splashColor: Colors.red,
+                                                        color: Colors.green,
+                                                        // textColor: Colors.white,
+                                                        child: isLoading
+                                                            ? CircularProgressIndicator()
+                                                            : Text(
+                                                                'Close',
+                                                              ),
+                                                        onPressed: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder:
+                                                                (BuildContext
+                                                                    context) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                    "Action"),
+                                                                content: Text(
+                                                                    "Do you want to close the issue : " +
+                                                                        map1[index]["ISSUE_TITLE"]
+                                                                            .toString() +
+                                                                        " (" +
+                                                                        map1[index]["ISSUE_DATES"]
+                                                                            .toString() +
+                                                                        ") ???"
+                                                                    // controller: _controller,
+                                                                    ),
+                                                                actions: <
+                                                                    Widget>[
+                                                                  Icon(
+                                                                    Icons
+                                                                        .info_outlined,
+                                                                  ),
+                                                                  FlatButton(
+                                                                    child: Text(
+                                                                        "No"),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          "");
+                                                                      // MemberApproveReject(map1[index]["CONTACT_NO"].toString(), 1);
+                                                                    },
+                                                                    shape: RoundedRectangleBorder(
+                                                                        side: BorderSide(
+                                                                            color: Colors
+                                                                                .blue,
+                                                                            width:
+                                                                                1,
+                                                                            style: BorderStyle
+                                                                                .solid),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(50)),
+                                                                  ),
+                                                                  FlatButton(
+                                                                    child: Text(
+                                                                        "Yes"),
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          "");
+                                                                      IssueClosing(
+                                                                          map1[index]["ISSUE_ID"]
+                                                                              .toString());
+                                                                    },
+                                                                    shape: RoundedRectangleBorder(
+                                                                        side: BorderSide(
+                                                                            color: Colors
+                                                                                .blue,
+                                                                            width:
+                                                                                1,
+                                                                            style: BorderStyle
+                                                                                .solid),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(50)),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      )
+                                                    : SizedBox(),
                                               ]))));
                             },
                           )
@@ -227,7 +336,6 @@ class IssueList extends State<IssueListScreen> {
                             // inorder to display something on the Canvas
                             future: IssueListFuture(),
                           ))
-
               ],
             ),
           ),
